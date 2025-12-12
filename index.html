@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dice Combo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; min-height: 100vh; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-x: hidden; }
+        
+        .container { max-width: 1000px; width: 100%; background: rgba(25, 25, 35, 0.95); border-radius: 12px; padding: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); border: 1px solid #2a2a3e; margin-bottom: 8px; position: relative; }
+        
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: rgba(40, 40, 60, 0.7); border-radius: 10px; border: 1px solid #3a3a4e; overflow: hidden; min-height: 80px; padding-right: 8px; }
+        
+        .title-section { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 16px; background: linear-gradient(90deg, rgba(60, 60, 80, 0.8) 0%, rgba(40, 40, 60, 0.7) 100%); }
+        
+        .header-buttons { display: flex; gap: 8px; align-items: center; }
+        
+        .header-btn { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #222; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.2s ease; width: 44px; height: 44px; border-radius: 50%; font-size: 0.85rem; }
+        
+        .header-btn:hover { background: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%); transform: scale(1.05); }
+        
+        .header-btn:active { transform: translateY(2px) scale(0.95); }
+        
+        .game-title { font-size: 1.6rem; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+        
+        .game-subtitle { font-size: 0.9rem; color: #ffd166; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+        
+        .players-info { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+        
+        .player-card { flex: 1; background: rgba(40, 40, 60, 0.8); border-radius: 8px; padding: 8px; border: 1px solid #3a3a4e; display: flex; align-items: center; justify-content: space-between; position: relative; }
+        
+        .player-card.player { border-color: #4ecdc4; }
+        .player-card.ai { border-color: #ff6b6b; }
+        
+        .player-card.active-turn { box-shadow: 0 0 0 2px #ffd166, 0 0 15px rgba(255, 209, 102, 0.5); animation: pulse 2s infinite; }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 2px #ffd166, 0 0 15px rgba(255, 209, 102, 0.5); }
+            50% { box-shadow: 0 0 0 4px #ffd166, 0 0 25px rgba(255, 209, 102, 0.8); }
+            100% { box-shadow: 0 0 0 2px #ffd166, 0 0 15px rgba(255, 209, 102, 0.5); }
+        }
+        
+        .player-left { flex: 1; }
+        .player-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; }
+        
+        .player-card h2 { font-size: 0.8rem; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
+        
+        .score { font-size: 1.5rem; font-weight: bold; line-height: 1; }
+        
+        .player-card.player .score { color: #4ecdc4; }
+        .player-card.ai .score { color: #ff6b6b; }
+        
+        .round-score-left { font-size: 0.95rem; font-weight: bold; color: #ffd166; background: rgba(60, 60, 80, 0.8); padding: 3px 8px; border-radius: 4px; display: inline-block; line-height: 1; margin-top: 4px; }
+        
+        .game-area { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+        
+        .dice-section { background: rgba(30, 30, 50, 0.8); padding: 12px; border-radius: 10px; border: 1px solid #3a3a5e; position: relative; }
+        
+        .round-info-bar { display: flex; justify-content: space-between; background: rgba(40, 40, 60, 0.9); padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #3a3a4e; font-weight: bold; }
+        
+        .player-turn-round { border-color: #4ecdc4; border-width: 2px; background: rgba(78, 205, 196, 0.15); }
+        .ai-turn-round { border-color: #ff6b6b; border-width: 2px; background: rgba(255, 107, 107, 0.15); }
+        
+        .round-display { font-size: 0.9rem; color: #fff; display: flex; align-items: center; gap: 6px; }
+        
+        .turn-indicator { font-size: 0.9rem; color: #ffd166; display: flex; align-items: center; gap: 6px; }
+        
+        .dice-container { display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; margin-bottom: 12px; overflow-x: auto; padding: 4px 0; }
+        
+        .dice-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+        
+        .dice { width: 58px; height: 58px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; color: #222; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); cursor: pointer; transition: all 0.2s ease; position: relative; user-select: none; }
+        
+        .dice-label { font-size: 0.85rem; font-weight: bold; color: #ffd166; background: rgba(60, 60, 80, 0.8); padding: 2px 6px; border-radius: 4px; min-width: 22px; text-align: center; }
+        
+        .dice:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); }
+        
+        .dice.selected { background: #4ecdc4; color: white; transform: scale(1.05); }
+        .dice.ai-selected { background: #ff6b6b; color: white; transform: scale(1.05); }
+        .dice.used { background: #555; color: #777; cursor: not-allowed; opacity: 0.5; transform: scale(0.9); }
+        .dice.locked { background: #888; color: #aaa; cursor: not-allowed; opacity: 0.7; }
+        
+        .dice.used::after { content: "×"; position: absolute; top: -4px; right: -4px; background: #ff6b6b; color: white; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
+        
+        .dice-points { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); width: 100%; height: 100%; padding: 5px; }
+        
+        .dot { width: 7px; height: 7px; background-color: #222; border-radius: 50%; justify-self: center; align-self: center; }
+        
+        .dice.selected .dot, .dice.ai-selected .dot { background-color: white; }
+        .dice.used .dot { background-color: #777; }
+        .dice.locked .dot { background-color: #aaa; }
+        
+        .dice-1 .dot:nth-child(1) { grid-column: 2; grid-row: 2; }
+        .dice-2 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
+        .dice-2 .dot:nth-child(2) { grid-column: 3; grid-row: 3; }
+        .dice-3 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
+        .dice-3 .dot:nth-child(2) { grid-column: 2; grid-row: 2; }
+        .dice-3 .dot:nth-child(3) { grid-column: 3; grid-row: 3; }
+        .dice-4 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
+        .dice-4 .dot:nth-child(2) { grid-column: 3; grid-row: 1; }
+        .dice-4 .dot:nth-child(3) { grid-column: 1; grid-row: 3; }
+        .dice-4 .dot:nth-child(4) { grid-column: 3; grid-row: 3; }
+        .dice-5 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
+        .dice-5 .dot:nth-child(2) { grid-column: 3; grid-row: 1; }
+        .dice-5 .dot:nth-child(3) { grid-column: 2; grid-row: 2; }
+        .dice-5 .dot:nth-child(4) { grid-column: 1; grid-row: 3; }
+        .dice-5 .dot:nth-child(5) { grid-column: 3; grid-row: 3; }
+        .dice-6 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
+        .dice-6 .dot:nth-child(2) { grid-column: 1; grid-row: 2; }
+        .dice-6 .dot:nth-child(3) { grid-column: 1; grid-row: 3; }
+        .dice-6 .dot:nth-child(4) { grid-column: 3; grid-row: 1; }
+        .dice-6 .dot:nth-child(5) { grid-column: 3; grid-row: 2; }
+        .dice-6 .dot:nth-child(6) { grid-column: 3; grid-row: 3; }
+        
+        .dice-question { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 1.7rem; font-weight: bold; color: #666; }
+        
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-3px, -3px) rotate(-5deg); }
+            20% { transform: translate(3px, 3px) rotate(5deg); }
+            30% { transform: translate(-3px, 3px) rotate(-5deg); }
+            40% { transform: translate(3px, -3px) rotate(5deg); }
+            50% { transform: translate(-3px, -3px) rotate(-5deg); }
+            60% { transform: translate(3px, 3px) rotate(5deg); }
+            70% { transform: translate(-3px, 3px) rotate(-5deg); }
+            80% { transform: translate(3px, -3px) rotate(5deg); }
+            90% { transform: translate(-3px, -3px) rotate(-5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        
+        .dice.shaking { animation: shake 0.5s ease-in-out; }
+        
+        .current-combination { background: rgba(40, 40, 60, 0.8); padding: 12px; border-radius: 8px; margin-top: 12px; border: 1px solid #3a3a5e; }
+        
+        .combination-title { font-size: 0.9rem; color: #ffd166; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        
+        .combination-display { display: flex; flex-direction: column; gap: 6px; }
+        
+        .combination-item { display: flex; align-items: center; gap: 8px; padding: 6px; background: rgba(60, 60, 80, 0.6); border-radius: 5px; border-left: 3px solid #4ecdc4; font-size: 0.8rem; }
+        
+        .ai-combination-item { border-left: 3px solid #ff6b6b; }
+        
+        .combination-type { font-weight: bold; color: #4ecdc4; min-width: 60px; }
+        .ai-combination-type { color: #ff6b6b; }
+        
+        .combination-values { font-size: 0.8rem; color: #fff; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        
+        .combination-dice { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; background: linear-gradient(135deg, #4ecdc4 0%, #a8e6cf 100%); border-radius: 4px; font-size: 0.9rem; font-weight: bold; color: #222; }
+        .ai-combination-dice { background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%); }
+        
+        .combination-score { margin-left: auto; font-weight: bold; color: #ffd166; font-size: 0.9rem; }
+        
+        .total-score { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(60, 60, 80, 0.8); border-radius: 5px; margin-top: 8px; font-weight: bold; font-size: 1rem; border: 2px solid #ffd166; }
+        
+        .total-label { color: #fff; }
+        .total-value { color: #ffd166; font-size: 1.1rem; }
+        
+        .controls { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+        
+        .control-btn { padding: 10px 8px; font-size: 0.85rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 5px; text-align: center; }
+        
+        .control-btn:active { transform: translateY(4px); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
+        
+        #confirm-continue-btn { background: linear-gradient(135deg, #4ecdc4 0%, #a8e6cf 100%); color: #222; }
+        #confirm-continue-btn:hover { background: linear-gradient(135deg, #3dbdb4 0%, #98d6bf 100%); }
+        
+        #confirm-end-btn { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #222; }
+        #confirm-end-btn:hover { background: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%); }
+        
+        button:disabled { background: #555; color: #888; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        
+        .collapsible { background: rgba(30, 30, 50, 0.8); border-radius: 10px; border: 1px solid #3a3a5e; margin-bottom: 8px; overflow: hidden; }
+        
+        .collapsible-header { padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: rgba(40, 40, 60, 0.9); }
+        
+        .collapsible-header h3 { font-size: 1rem; margin: 0; color: #ddd; display: flex; align-items: center; gap: 6px; }
+        
+        .collapse-icon { transition: transform 0.3s ease; color: #ffd166; }
+        
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .collapsible-content.expanded { max-height: 200px; overflow-y: auto; }
+        
+        .game-log .log-content { font-size: 0.8rem; line-height: 1.4; padding: 10px; display: flex; flex-direction: column-reverse; max-height: 200px; overflow-y: auto; }
+        
+        .log-entry { padding: 6px; margin-bottom: 6px; border-radius: 5px; animation: fadeIn 0.5s ease; }
+        
+        .player-log { background: rgba(78, 205, 196, 0.1); border-left: 2px solid #4ecdc4; }
+        .ai-log { background: rgba(255, 107, 107, 0.1); border-left: 2px solid #ff6b6b; }
+        .system-log { background: rgba(255, 209, 102, 0.1); border-left: 2px solid #ffd166; }
+        .warning-log { background: rgba(255, 107, 107, 0.15); border-left: 2px solid #ff6b6b; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.95); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000; 
+            animation: fadeIn 0.3s ease; 
+            padding: 16px; 
+        }
+        
+        .modal-content { 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); 
+            padding: 20px; 
+            border-radius: 12px; 
+            text-align: left; 
+            max-width: 800px; 
+            width: 100%; 
+            max-height: 70vh; 
+            overflow-y: auto; 
+            border: 2px solid #4ecdc4; 
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7); 
+            position: relative;
+        }
+        
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        .modal-title { font-size: 1.4rem; color: #ffd166; display: flex; align-items: center; gap: 10px; }
+        
+        .overlay-close-hint { 
+            position: fixed; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            color: rgba(255, 255, 255, 0.7); 
+            font-size: 0.9rem; 
+            text-align: center; 
+            width: 100%; 
+            padding: 10px; 
+            z-index: 1001; 
+        }
+        
+        .rules-section { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .rules-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .rules-section-title { font-size: 1.1rem; color: #ffd166; margin-bottom: 12px; padding-left: 8px; border-left: 4px solid #a18cd1; display: flex; align-items: center; gap: 8px; }
+        
+        .rules-list { padding-left: 20px; margin-bottom: 10px; }
+        .rules-list li { margin-bottom: 8px; position: relative; }
+        .rules-list li::before { content: "•"; color: #4ecdc4; font-weight: bold; position: absolute; left: -15px; }
+        
+        .rules-highlight { background: rgba(255, 209, 102, 0.15); padding: 12px; border-radius: 8px; border-left: 4px solid #ffd166; margin: 12px 0; }
+        .rules-highlight-title { color: #ffd166; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        
+        .rules-warning { background: rgba(255, 107, 107, 0.15); padding: 12px; border-radius: 8px; border-left: 4px solid #ff6b6b; margin: 12px 0; }
+        .rules-warning-title { color: #ff6b6b; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        
+        .rules-example { background: rgba(78, 205, 196, 0.1); padding: 10px; border-radius: 6px; margin: 8px 0; font-style: italic; border-left: 3px solid #4ecdc4; }
+        
+        .highlight { color: #ffd166; font-weight: bold; }
+        .warning { color: #ff6b6b; font-weight: bold; }
+        .important { color: #4ecdc4; font-weight: bold; }
+        
+        .history-table-container { margin-top: 15px; overflow-x: auto; }
+        .history-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
+        
+        .history-table th { background: rgba(60, 60, 80, 0.9); color: #ffd166; padding: 12px 8px; text-align: center; position: sticky; top: 0; z-index: 1; font-size: 0.9rem; border-bottom: 2px solid rgba(255, 209, 102, 0.3); }
+        .history-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .history-table tr:last-child td { border-bottom: none; }
+        .history-table tr:hover { background: rgba(255, 255, 255, 0.05); }
+        
+        .player-round { color: #4ecdc4; font-weight: bold; }
+        .ai-round { color: #ff6b6b; font-weight: bold; }
+        
+        .round-combination { max-width: 200px; word-break: break-word; font-size: 0.8rem; line-height: 1.4; }
+        .penalty-text { color: #ff6b6b; font-weight: bold; }
+        
+        .penalty-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%); color: white; padding: 16px; border-radius: 10px; z-index: 200; text-align: center; box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5); display: none; animation: popIn 0.5s ease-out; }
+        
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .game-over { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); display: none; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.5s ease; padding: 16px; flex-direction: column; }
+        
+        .game-over-content { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-radius: 12px; text-align: center; max-width: 800px; width: 100%; max-height: 70vh; overflow-y: auto; border: 2px solid #4ecdc4; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7); margin-bottom: 20px; }
+        
+        .game-over-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        .game-over h2 { font-size: 1.8rem; margin-bottom: 8px; color: #ffd166; display: flex; align-items: center; gap: 10px; }
+        
+        .winner-message { font-size: 1.3rem; margin-bottom: 12px; padding: 8px 16px; border-radius: 8px; font-weight: bold; }
+        .player-winner { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; border: 1px solid #4ecdc4; }
+        .ai-winner { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; border: 1px solid #ff6b6b; }
+        .tie-winner { background: rgba(255, 209, 102, 0.2); color: #ffd166; border: 1px solid #ffd166; }
+        
+        .final-score-display { display: flex; justify-content: center; gap: 20px; margin: 15px 0; font-size: 1.2rem; }
+        .final-player-score { color: #4ecdc4; font-weight: bold; }
+        .final-ai-score { color: #ff6b6b; font-weight: bold; }
+        
+        .total-rounds-display {
+            font-size: 1.1rem;
+            color: #ffd166;
+            margin-top: 10px;
+            font-weight: bold;
+            background: rgba(60, 60, 80, 0.8);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+        
+        .stats-table-container { margin-top: 15px; overflow-x: auto; }
+        .stats-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: rgba(40, 40, 60, 0.8); border-radius: 8px; overflow: hidden; }
+        
+        .stats-table th { background: rgba(60, 60, 80, 0.9); color: #ffd166; padding: 10px; text-align: center; font-weight: bold; border-bottom: 2px solid rgba(255, 255, 255, 0.1); }
+        .stats-table td { padding: 10px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .stats-table tr:last-child td { border-bottom: none; }
+        .stats-table tr:hover { background: rgba(255, 255, 255, 0.05); }
+        
+        .player-stats-row td:first-child { color: #4ecdc4; font-weight: bold; }
+        .ai-stats-row td:first-child { color: #ff6b6b; font-weight: bold; }
+        .stats-value-cell { font-weight: bold; font-size: 1.1rem; }
+        
+        .game-over-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+        
+        #restart-btn { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #222; font-size: 1rem; padding: 12px 24px; min-width: 200px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
+        
+        #game-over-history-btn { background: linear-gradient(135deg, #4ecdc4 0%, #a8e6cf 100%); color: #222; font-size: 1rem; padding: 12px 24px; min-width: 200px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
+        
+        .sound-control { position: fixed; bottom: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; background: rgba(40, 40, 60, 0.9); color: #ffd166; border: 1px solid #3a3a5e; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; z-index: 50; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); }
+        .sound-control:hover { background: rgba(60, 60, 80, 0.9); }
+        .sound-control.muted { color: #888; }
+        
+        .game-credit { 
+            position: absolute; 
+            bottom: 8px; 
+            right: 12px; 
+            font-size: 0.7rem; 
+            color: rgba(255, 255, 255, 0.5); 
+            text-align: right; 
+            z-index: 1; 
+        }
+        
+        /* 响应式设计优化 - 手机端玩家和AI左右并列 */
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .game-title { font-size: 1.4rem; }
+            .game-subtitle { font-size: 0.8rem; }
+            .players-info { flex-direction: row; }
+            .player-card { width: 100%; }
+            .dice { width: 46px; height: 46px; font-size: 1.5rem; }
+            .dice-question { font-size: 1.5rem; }
+            .dice-points { padding: 4px; }
+            .dot { width: 6px; height: 6px; }
+            .dice-label { font-size: 0.8rem; padding: 1px 4px; min-width: 20px; }
+            .dice-container { gap: 6px; }
+            .dice-wrapper { gap: 2px; }
+            .control-btn { font-size: 0.8rem; padding: 8px 6px; }
+            .header-btn { width: 40px; height: 40px; font-size: 0.75rem; }
+            .game-over-content { padding: 15px; max-height: 60vh; }
+            .game-over h2 { font-size: 1.5rem; }
+            .winner-message { font-size: 1.1rem; }
+            .round-score-left { font-size: 0.9rem; padding: 2px 6px; }
+            .round-display, .turn-indicator { font-size: 0.8rem; }
+            .modal-content { padding: 15px; max-height: 60vh; }
+            .modal-title { font-size: 1.2rem; }
+            .overlay-close-hint { font-size: 0.8rem; bottom: 20px; }
+            .history-table { font-size: 0.75rem; }
+            .history-table th, .history-table td { padding: 8px 4px; }
+            .round-combination { max-width: 120px; }
+            .sound-control { width: 40px; height: 40px; font-size: 1rem; }
+            .game-over-buttons { flex-direction: column; align-items: center; }
+            #restart-btn, #game-over-history-btn { min-width: 180px; width: 100%; max-width: 250px; }
+            .rules-section-title { font-size: 1rem; }
+            .rules-content { font-size: 0.85rem; }
+            .total-rounds-display { font-size: 1rem; padding: 6px 12px; }
+            .game-header { min-height: 70px; }
+            .title-section { padding: 12px; }
+        }
+        
+        @media (max-width: 480px) {
+            .dice { width: 42px; height: 42px; font-size: 1.4rem; }
+            .dice-question { font-size: 1.4rem; }
+            .dot { width: 5px; height: 5px; }
+            .dice-container { gap: 4px; }
+            .game-header { min-height: auto; padding-right: 8px; }
+            .title-section { padding: 10px; }
+            .header-buttons { gap: 6px; }
+            .header-btn { width: 38px; height: 38px; font-size: 0.7rem; }
+            .round-score-left { font-size: 0.85rem; padding: 2px 4px; }
+            .history-table { font-size: 0.7rem; }
+            .history-table th, .history-table td { padding: 6px 3px; }
+            .round-combination { max-width: 100px; }
+            .overlay-close-hint { font-size: 0.75rem; bottom: 15px; }
+            .players-info { gap: 6px; }
+            .player-card { padding: 6px; }
+        }
+        
+        /* PC端骰子更大 */
+        @media (min-width: 769px) {
+            .dice { width: 62px; height: 62px; font-size: 1.9rem; }
+            .dice-question { font-size: 1.9rem; }
+            .dice-points { padding: 7px; }
+            .dot { width: 8px; height: 8px; }
+        }
+        
+        .log-content::-webkit-scrollbar, .modal-content::-webkit-scrollbar { width: 6px; }
+        .log-content::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { background: rgba(60, 60, 80, 0.5); border-radius: 3px; }
+        .log-content::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb { background: #ffd166; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <div class="title-section">
+                <div class="game-title">Dice Combo 🎲</div>
+                <div class="game-subtitle"><i class="fas fa-bullseye"></i> 目标分数: <span id="target-score">100</span></div>
+            </div>
+            <div class="header-buttons">
+                <button class="header-btn" id="rules-button" title="游戏规则">
+                    <i class="fas fa-book"></i>
+                </button>
+                <button class="header-btn" id="history-button" title="历史记录">
+                    <i class="fas fa-history"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="players-info">
+            <div class="player-card player" id="player-card">
+                <div class="player-left">
+                    <h2><i class="fas fa-user"></i> 玩家</h2>
+                    <div class="round-score-left" id="player-round-score-left">本回合: 0</div>
+                </div>
+                <div class="player-right">
+                    <div class="score-container">
+                        <div class="score player-score">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="player-card ai" id="ai-card">
+                <div class="player-left">
+                    <h2><i class="fas fa-robot"></i> AI对手</h2>
+                    <div class="round-score-left" id="ai-round-score-left">本回合: 0</div>
+                </div>
+                <div class="player-right">
+                    <div class="score-container">
+                        <div class="score ai-score">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <div class="dice-section">
+                <!-- 修改回合信息显示 -->
+                <div class="round-info-bar" id="round-info-bar">
+                    <div class="round-display">
+                        <i class="fas fa-flag"></i> 第<span id="round-number">1</span>回合
+                    </div>
+                    <div class="turn-indicator" id="turn-indicator-text">
+                        <i class="fas fa-user"></i> 玩家回合
+                    </div>
+                </div>
+                
+                <div class="dice-container" id="dice-container"></div>
+                
+                <div class="current-combination" id="current-combination">
+                    <h3 class="combination-title" id="combination-title"><i class="fas fa-list-ol"></i> 当前组合分析</h3>
+                    <div class="combination-display" id="combination-display"></div>
+                    <div class="total-score" id="total-score-display">
+                        <div class="total-label">总计得分:</div>
+                        <div class="total-value" id="total-score-value">0</div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="confirm-continue-btn" class="control-btn" disabled>
+                        <i class="fas fa-redo"></i> 计分并再次投掷
+                    </button>
+                    <button id="confirm-end-btn" class="control-btn" disabled>
+                        <i class="fas fa-flag-checkered"></i> 计分并结束回合
+                    </button>
+                </div>
+            </div>
+            
+            <div class="collapsible" id="game-log-collapsible">
+                <div class="collapsible-header" onclick="toggleCollapse('game-log')">
+                    <h3><i class="fas fa-scroll"></i> 游戏日志</h3>
+                    <i class="fas fa-chevron-down collapse-icon" id="game-log-icon"></i>
+                </div>
+                <div class="collapsible-content" id="game-log-content">
+                    <div class="log-content" id="log-content">
+                        <div class="log-entry system-log">
+                            游戏开始！你是先手。等待骰子投掷...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 游戏版权信息 -->
+        <div class="game-credit">A game by DeepSeek & Wes</div>
+    </div>
+    
+    <button class="sound-control" id="sound-control">
+        <i class="fas fa-volume-up"></i>
+    </button>
+    
+    <div class="overlay" id="rules-overlay">
+        <div class="modal-content" id="rules-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-book"></i> 游戏规则</h2>
+            </div>
+            <div class="rules-content">
+                <div class="rules-section">
+                    <h3 class="rules-section-title"><i class="fas fa-gamepad"></i> 核心操作</h3>
+                    <ul class="rules-list">
+                        <li>每回合自动投掷骰子，<span class="important">必须按从小到大的顺序</span>点击骰子选择</li>
+                        <li>再次点击已选骰子，可取消选择</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3 class="rules-section-title"><i class="fas fa-calculator"></i> 分组与计分</h3>
+                    <ul class="rules-list">
+                        <li><span class="highlight">系统自动分组：</span></li>
+                        <li>连续选择的 <span class="important">"连续数字"</span> = 连续数</li>
+                        <li>连续选择的 <span class="important">"相同数字"</span> = 叠数</li>
+                        <li><span class="important">优先级：</span>先点击的组合先计分</li>
+                    </ul>
+                    <div class="rules-highlight">
+                        <div class="rules-highlight-title"><i class="fas fa-bullseye"></i> 计分公式</div>
+                        <div>连续数个数² + 叠数个数²</div>
+                        <div class="rules-example">例：选 123+44 = 3² + 2² = 9 + 4 = 13 分</div>
+                    </div>
+                </div>
+                
+                <div class="rules-section">
+                    <h3 class="rules-section-title"><i class="fas fa-play-circle"></i> 按钮功能</h3>
+                    <ul class="rules-list">
+                        <li><span class="important">『计分并再次投掷』：</span>当前组合加分，继续投剩余骰子</li>
+                        <li><span class="important">『计分并结束回合』：</span>当前组合加分，直接结束本回合</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3 class="rules-section-title"><i class="fas fa-star"></i> 特殊规则</h3>
+                    <ul class="rules-list">
+                        <li><span class="warning">剩余 1 个骰子时</span>，只能点击『计分并结束回合』，不能继续投掷</li>
+                        <li>若 1 回合内 6 个骰子全计分，可用『计分并再次投掷』重投 6 个新骰子<span class="highlight">（运气奖励）</span>，可循环使用</li>
+                    </ul>
+                </div>
+                
+                <div class="rules-section">
+                    <h3 class="rules-section-title"><i class="fas fa-exclamation-triangle"></i> 惩罚机制</h3>
+                    <div class="rules-warning">
+                        <div class="rules-warning-title"><i class="fas fa-skull-crossbones"></i> 警告！</div>
+                        <ul class="rules-list">
+                            <li>选 "继续投掷" 后，剩余骰子无可用组合 → <span class="warning">本回合分数作废</span>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="rules-section">
+                    <h3 class="rules-section-title"><i class="fas fa-flag-checkered"></i> 游戏胜利条件</h3>
+                    <div class="rules-highlight">
+                        <div class="rules-highlight-title"><i class="fas fa-trophy"></i> 胜负判定</div>
+                        <ul class="rules-list">
+                            <li>玩家与AI轮流进行回合，构成一个完整回合</li>
+                            <li>当一个完整回合结束时，若<span class="important">任何一方的累计分数达到或超过100分</span>，则游戏结束</li>
+                            <li><span class="important">分数高者获胜</span>，若分数相同，则为<span class="important">平局</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 点击空白处返回提示 -->
+        <div class="overlay-close-hint" id="rules-close-hint">点击空白处返回</div>
+    </div>
+    
+    <div class="overlay round-history-modal" id="history-overlay">
+        <div class="modal-content" id="history-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-history"></i> 回合历史记录</h2>
+            </div>
+            <div class="history-table-container">
+                <table class="history-table" id="history-table">
+                    <thead>
+                        <tr>
+                            <th>回合</th>
+                            <th>玩家</th>
+                            <th>组合详情</th>
+                            <th>得分</th>
+                            <th>累计</th>
+                            <th>AI</th>
+                            <th>组合详情</th>
+                            <th>得分</th>
+                            <th>累计</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- 点击空白处返回提示 -->
+        <div class="overlay-close-hint" id="history-close-hint">点击空白处返回</div>
+    </div>
+    
+    <div class="penalty-popup" id="penalty-popup">
+        <div class="penalty-title">
+            <i class="fas fa-exclamation-triangle"></i> 惩罚！
+        </div>
+        <div class="penalty-message" id="penalty-message">
+            本回合分数作废
+        </div>
+        <div class="penalty-score" id="penalty-score">
+            损失分数: 0
+        </div>
+    </div>
+    
+    <div class="game-over" id="game-over">
+        <div class="game-over-content">
+            <div class="game-over-header">
+                <h2><i class="fas fa-trophy"></i> 游戏结束</h2>
+                <div class="winner-message" id="winner-message">玩家获胜！</div>
+                <div class="final-score-display">
+                    <span class="final-player-score" id="final-player-score">玩家: 0</span>
+                    <span> - </span>
+                    <span class="final-ai-score" id="final-ai-score">AI: 0</span>
+                </div>
+                <div class="total-rounds-display" id="total-rounds-display">总回合数: 0</div>
+            </div>
+            
+            <div class="stats-table-container">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>统计项</th>
+                            <th>玩家</th>
+                            <th>AI对手</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="player-stats-row">
+                            <td>平均每回合得分</td>
+                            <td class="stats-value-cell" id="player-avg-score">0</td>
+                            <td class="stats-value-cell" id="ai-avg-score">0</td>
+                        </tr>
+                        <tr class="ai-stats-row">
+                            <td>最高单回合得分</td>
+                            <td class="stats-value-cell" id="player-max-score">0</td>
+                            <td class="stats-value-cell" id="ai-max-score">0</td>
+                        </tr>
+                        <tr class="player-stats-row">
+                            <td>骰子全计分次数</td>
+                            <td class="stats-value-cell" id="player-full-clear">0</td>
+                            <td class="stats-value-cell" id="ai-full-clear">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="game-over-buttons">
+            <button id="restart-btn" class="control-btn">
+                <i class="fas fa-redo"></i> 重新开始游戏
+            </button>
+            <button id="game-over-history-btn" class="control-btn">
+                <i class="fas fa-history"></i> 查看历史记录
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态变量
+        const gameState = {
+            playerScore: 0,
+            aiScore: 0,
+            targetScore: 100,
+            currentPlayer: 'player',
+            diceValues: [],
+            selectedDice: [],
+            currentSequence: [],
+            roundScore: 0,
+            gameActive: true,
+            roundActive: false,
+            diceCount: 6,
+            canSelectNewSequence: true,
+            currentCombination: [],
+            currentRound: 1,
+            playerRoundScore: 0,
+            aiRoundScore: 0,
+            roundCompleted: false,
+            gameHistory: [],
+            currentPlayerCombinationString: '',
+            currentAICombinationString: '',
+            playerPenaltyThisRound: false,
+            aiPenaltyThisRound: false,
+            soundEnabled: true,
+            audioInitialized: false,
+            playerFullClearCount: 0,
+            aiFullClearCount: 0
+        };
+        
+        // DOM元素缓存
+        const elements = {
+            playerScore: document.querySelector('.player-score'),
+            aiScore: document.querySelector('.ai-score'),
+            playerRoundScore: document.getElementById('player-round-score-left'),
+            aiRoundScore: document.getElementById('ai-round-score-left'),
+            targetScore: document.getElementById('target-score'),
+            roundNumber: document.getElementById('round-number'),
+            turnIndicatorText: document.getElementById('turn-indicator-text'),
+            diceContainer: document.getElementById('dice-container'),
+            confirmContinueBtn: document.getElementById('confirm-continue-btn'),
+            confirmEndBtn: document.getElementById('confirm-end-btn'),
+            logContent: document.getElementById('log-content'),
+            gameOverElement: document.getElementById('game-over'),
+            winnerMessage: document.getElementById('winner-message'),
+            finalPlayerScore: document.getElementById('final-player-score'),
+            finalAiScore: document.getElementById('final-ai-score'),
+            restartBtn: document.getElementById('restart-btn'),
+            penaltyPopup: document.getElementById('penalty-popup'),
+            penaltyMessage: document.getElementById('penalty-message'),
+            penaltyScore: document.getElementById('penalty-score'),
+            combinationTitle: document.getElementById('combination-title'),
+            combinationDisplay: document.getElementById('combination-display'),
+            totalScoreValue: document.getElementById('total-score-value'),
+            totalScoreDisplay: document.getElementById('total-score-display'),
+            playerCard: document.getElementById('player-card'),
+            aiCard: document.getElementById('ai-card'),
+            historyBody: document.getElementById('history-body'),
+            soundControl: document.getElementById('sound-control'),
+            totalRoundsDisplay: document.getElementById('total-rounds-display'),
+            playerAvgScore: document.getElementById('player-avg-score'),
+            playerMaxScore: document.getElementById('player-max-score'),
+            aiAvgScore: document.getElementById('ai-avg-score'),
+            aiMaxScore: document.getElementById('ai-max-score'),
+            rulesButton: document.getElementById('rules-button'),
+            rulesOverlay: document.getElementById('rules-overlay'),
+            historyButton: document.getElementById('history-button'),
+            historyOverlay: document.getElementById('history-overlay'),
+            gameOverHistoryBtn: document.getElementById('game-over-history-btn'),
+            roundInfoBar: document.getElementById('round-info-bar'),
+            rulesModalContent: document.getElementById('rules-modal-content'),
+            historyModalContent: document.getElementById('history-modal-content'),
+            playerFullClear: document.getElementById('player-full-clear'),
+            aiFullClear: document.getElementById('ai-full-clear')
+        };
+        
+        // 音效系统
+        let audioContext;
+        
+        // 初始化音效系统
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                gameState.audioInitialized = true;
+            }
+        }
+        
+        // 播放音效
+        function playSound(type) {
+            if (!gameState.soundEnabled || !gameState.audioInitialized) return;
+            
+            try {
+                if (audioContext.state === 'suspended') audioContext.resume();
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                const tones = {
+                    diceRoll: [200, 50],
+                    diceSelect: [800, 400],
+                    buttonClick: [600],
+                    score: [523.25, 659.25, 783.99],
+                    penalty: [200, 150, 100],
+                    win: [523.25, 659.25, 783.99, 1046.50],
+                    lose: [261.63, 220.00, 196.00, 174.61]
+                };
+                
+                const currentTime = audioContext.currentTime;
+                const typeData = tones[type];
+                
+                if (type === 'score' || type === 'penalty' || type === 'win' || type === 'lose') {
+                    // 多音调音效
+                    typeData.forEach((freq, index) => {
+                        oscillator.frequency.setValueAtTime(freq, currentTime + index * 0.1);
+                        gainNode.gain.setValueAtTime(0.3, currentTime + index * 0.1);
+                    });
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.5);
+                    oscillator.start();
+                    oscillator.stop(currentTime + 0.5);
+                } else {
+                    // 单音调音效
+                    oscillator.frequency.setValueAtTime(typeData[0], currentTime);
+                    if (typeData[1]) oscillator.frequency.exponentialRampToValueAtTime(typeData[1], currentTime + 0.2);
+                    gainNode.gain.setValueAtTime(0.2, currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + (type === 'diceRoll' ? 0.5 : 0.1));
+                    oscillator.start();
+                    oscillator.stop(currentTime + (type === 'diceRoll' ? 0.5 : 0.1));
+                }
+            } catch (e) {
+                console.log("音效播放失败:", e);
+            }
+        }
+        
+        // 音效控制
+        elements.soundControl.addEventListener('click', () => {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            if (gameState.soundEnabled) {
+                elements.soundControl.innerHTML = '<i class="fas fa-volume-up"></i>';
+                elements.soundControl.classList.remove('muted');
+                playSound('buttonClick');
+            } else {
+                elements.soundControl.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                elements.soundControl.classList.add('muted');
+            }
+        });
+        
+        // 折叠/展开功能
+        function toggleCollapse(sectionId) {
+            const content = document.getElementById(`${sectionId}-content`);
+            const icon = document.getElementById(`${sectionId}-icon`);
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('expanded');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+        
+        // 弹窗控制
+        elements.rulesButton.addEventListener('click', () => {
+            elements.rulesOverlay.style.display = 'flex';
+            playSound('buttonClick');
+        });
+        
+        elements.historyButton.addEventListener('click', () => {
+            elements.historyOverlay.style.display = 'flex';
+            updateHistoryTable();
+            playSound('buttonClick');
+        });
+        
+        elements.gameOverHistoryBtn.addEventListener('click', () => {
+            elements.historyOverlay.style.display = 'flex';
+            updateHistoryTable();
+            playSound('buttonClick');
+        });
+        
+        // 点击遮罩层关闭弹窗
+        elements.rulesOverlay.addEventListener('click', (e) => {
+            if (e.target === elements.rulesOverlay) {
+                elements.rulesOverlay.style.display = 'none';
+                playSound('buttonClick');
+            }
+        });
+        
+        elements.historyOverlay.addEventListener('click', (e) => {
+            if (e.target === elements.historyOverlay) {
+                elements.historyOverlay.style.display = 'none';
+                playSound('buttonClick');
+            }
+        });
+        
+        // 阻止弹窗内容点击事件冒泡
+        elements.rulesModalContent.addEventListener('click', (e) => e.stopPropagation());
+        elements.historyModalContent.addEventListener('click', (e) => e.stopPropagation());
+        
+        // 初始化折叠状态
+        function initCollapsible() {
+            document.getElementById('game-log-content').classList.add('expanded');
+            document.getElementById('game-log-icon').style.transform = 'rotate(180deg)';
+        }
+        
+        // 创建骰子点数显示
+        function createDicePoints(value) {
+            if (value === '?') return '<div class="dice-question">?</div>';
+            
+            const numValue = parseInt(value);
+            let dotsHtml = '';
+            for (let i = 0; i < numValue; i++) dotsHtml += '<div class="dot"></div>';
+            for (let i = numValue; i < 6; i++) dotsHtml += '<div class="dot" style="opacity: 0;"></div>';
+            
+            return `<div class="dice-points dice-${numValue}">${dotsHtml}</div>`;
+        }
+        
+        // 更新回合信息栏样式
+        function updateRoundInfoBar() {
+            if (gameState.currentPlayer === 'player') {
+                elements.roundInfoBar.className = 'round-info-bar player-turn-round';
+                elements.turnIndicatorText.innerHTML = '<i class="fas fa-user"></i> 玩家回合';
+            } else {
+                elements.roundInfoBar.className = 'round-info-bar ai-turn-round';
+                elements.turnIndicatorText.innerHTML = '<i class="fas fa-robot"></i> AI回合';
+            }
+            elements.roundNumber.textContent = gameState.currentRound;
+        }
+        
+        // 更新回合高亮显示
+        function updateTurnHighlight() {
+            if (gameState.currentPlayer === 'player') {
+                elements.playerCard.classList.add('active-turn');
+                elements.aiCard.classList.remove('active-turn');
+            } else {
+                elements.aiCard.classList.add('active-turn');
+                elements.playerCard.classList.remove('active-turn');
+            }
+        }
+        
+        // 初始化游戏
+        function initGame() {
+            Object.assign(gameState, {
+                playerScore: 0,
+                aiScore: 0,
+                targetScore: 100,
+                currentPlayer: 'player',
+                diceValues: [],
+                selectedDice: [],
+                currentSequence: [],
+                roundScore: 0,
+                gameActive: true,
+                roundActive: false,
+                diceCount: 6,
+                canSelectNewSequence: true,
+                currentCombination: [],
+                currentRound: 1,
+                playerRoundScore: 0,
+                aiRoundScore: 0,
+                roundCompleted: false,
+                gameHistory: [],
+                currentPlayerCombinationString: '',
+                currentAICombinationString: '',
+                playerPenaltyThisRound: false,
+                aiPenaltyThisRound: false,
+                soundEnabled: gameState.soundEnabled,
+                audioInitialized: gameState.audioInitialized,
+                playerFullClearCount: 0,
+                aiFullClearCount: 0
+            });
+            
+            updateScores();
+            updateRoundScoreDisplay();
+            updateRoundInfoBar();
+            updateTurnHighlight();
+            createDiceElements();
+            updateCombinationDisplay([]);
+            
+            elements.logContent.innerHTML = '';
+            addLogEntry('系统', `游戏开始！第${gameState.currentRound}回合，你是先手。`, 'system');
+            
+            disableAllButtons();
+            elements.gameOverElement.style.display = 'none';
+            elements.penaltyPopup.style.display = 'none';
+            elements.rulesOverlay.style.display = 'none';
+            elements.historyOverlay.style.display = 'none';
+            
+            initCollapsible();
+            if (!gameState.audioInitialized) initAudio();
+            setTimeout(() => rollDice(), 1000);
+        }
+        
+        // 创建骰子元素
+        function createDiceElements() {
+            elements.diceContainer.innerHTML = '';
+            
+            for (let i = 0; i < gameState.diceCount; i++) {
+                const diceWrapper = document.createElement('div');
+                diceWrapper.className = 'dice-wrapper';
+                
+                const dice = document.createElement('div');
+                dice.className = 'dice';
+                dice.dataset.index = i;
+                dice.dataset.value = gameState.diceValues[i] || '?';
+                dice.innerHTML = createDicePoints(gameState.diceValues[i] || '?');
+                
+                if (gameState.diceValues[i]) {
+                    dice.classList.remove('used', 'locked', 'selected', 'ai-selected');
+                    if (gameState.selectedDice.includes(i)) dice.classList.add('used');
+                    if (gameState.currentSequence.includes(i)) {
+                        dice.classList.add(gameState.currentPlayer === 'player' ? 'selected' : 'ai-selected');
+                    }
+                    if (!gameState.canSelectNewSequence && !gameState.selectedDice.includes(i) && !gameState.currentSequence.includes(i)) dice.classList.add('locked');
+                }
+                
+                const diceLabel = document.createElement('div');
+                diceLabel.className = 'dice-label';
+                diceLabel.textContent = gameState.diceValues[i] || '?';
+                
+                diceWrapper.appendChild(dice);
+                diceWrapper.appendChild(diceLabel);
+                
+                if (gameState.currentPlayer === 'player') {
+                    dice.addEventListener('click', () => selectDice(i));
+                    dice.style.cursor = 'pointer';
+                } else {
+                    dice.style.cursor = 'default';
+                }
+                elements.diceContainer.appendChild(diceWrapper);
+            }
+        }
+        
+        // 更新骰子显示
+        function updateDiceDisplay() {
+            document.querySelectorAll('.dice-wrapper').forEach((wrapper, index) => {
+                const dice = wrapper.querySelector('.dice');
+                const diceLabel = wrapper.querySelector('.dice-label');
+                dice.innerHTML = createDicePoints(gameState.diceValues[index] || '?');
+                dice.dataset.value = gameState.diceValues[index] || '?';
+                diceLabel.textContent = gameState.diceValues[index] || '?';
+                dice.classList.remove('selected', 'ai-selected', 'used', 'locked');
+                if (gameState.selectedDice.includes(index)) dice.classList.add('used');
+                else if (gameState.currentSequence.includes(index)) {
+                    dice.classList.add(gameState.currentPlayer === 'player' ? 'selected' : 'ai-selected');
+                }
+                else if (!gameState.canSelectNewSequence && !gameState.selectedDice.includes(index)) dice.classList.add('locked');
+            });
+        }
+        
+        // 投掷骰子动画效果
+        function animateDiceRoll() {
+            document.querySelectorAll('.dice').forEach((dice, index) => {
+                if (!gameState.selectedDice.includes(index)) {
+                    dice.classList.add('shaking');
+                    setTimeout(() => dice.classList.remove('shaking'), 500);
+                }
+            });
+        }
+        
+        // 投掷骰子
+        function rollDice() {
+            if (!gameState.gameActive) return;
+            
+            animateDiceRoll();
+            playSound('diceRoll');
+            
+            if (gameState.roundActive) {
+                for (let i = 0; i < gameState.diceCount; i++) {
+                    if (!gameState.selectedDice.includes(i)) {
+                        gameState.diceValues[i] = Math.floor(Math.random() * 6) + 1;
+                    }
+                }
+            } else {
+                gameState.diceValues = [];
+                gameState.selectedDice = [];
+                gameState.currentSequence = [];
+                for (let i = 0; i < gameState.diceCount; i++) {
+                    gameState.diceValues.push(Math.floor(Math.random() * 6) + 1);
+                }
+            }
+            
+            gameState.canSelectNewSequence = true;
+            
+            setTimeout(() => {
+                createDiceElements();
+                const diceValuesText = gameState.diceValues.map(v => v === '?' ? '?' : v).join(', ');
+                addLogEntry(gameState.currentPlayer === 'player' ? '玩家' : 'AI', `投掷骰子: ${diceValuesText}`, gameState.currentPlayer);
+                
+                const hasValidCombination = checkForValidCombinations();
+                
+                if (!hasValidCombination) {
+                    addLogEntry('系统', '没有可用组合可选！', 'warning');
+                    
+                    if (gameState.roundActive) {
+                        showPenaltyPopup(gameState.roundScore);
+                        
+                        if (gameState.currentPlayer === 'player') {
+                            gameState.playerPenaltyThisRound = true;
+                            gameState.currentPlayerCombinationString = '惩罚归零';
+                        } else {
+                            gameState.aiPenaltyThisRound = true;
+                            gameState.currentAICombinationString = '惩罚归零';
+                        }
+                        
+                        gameState.roundScore = 0;
+                        updateRoundScoreDisplay();
+                        
+                        setTimeout(() => {
+                            addLogEntry('系统', `惩罚：${gameState.currentPlayer === 'player' ? '玩家' : 'AI'}本回合分数作废！`, 'warning');
+                            endRound();
+                        }, 2000);
+                    } else {
+                        setTimeout(() => {
+                            if (gameState.currentPlayer === 'player') {
+                                gameState.currentPlayerCombinationString = '无有效组合';
+                            } else {
+                                gameState.currentAICombinationString = '无有效组合';
+                            }
+                            endRound();
+                        }, 1500);
+                    }
+                } else {
+                    if (gameState.currentPlayer === 'player') {
+                        const remainingDiceCount = gameState.diceCount - gameState.selectedDice.length;
+                        
+                        if (remainingDiceCount === 1) {
+                            addLogEntry('系统', '剩余骰子数量为1，无法继续投掷，只能结束本回合。', 'system');
+                            elements.confirmContinueBtn.disabled = true;
+                            elements.confirmEndBtn.disabled = false;
+                        } else {
+                            elements.confirmContinueBtn.disabled = true;
+                            elements.confirmEndBtn.disabled = true;
+                        }
+                    } else {
+                        setTimeout(aiSelectCombination, 1000);
+                    }
+                }
+            }, 500);
+        }
+        
+        // 显示惩罚弹窗
+        function showPenaltyPopup(lostScore) {
+            elements.penaltyMessage.textContent = '本回合分数作废';
+            elements.penaltyScore.textContent = `损失分数: ${lostScore}`;
+            elements.penaltyPopup.style.display = 'block';
+            playSound('penalty');
+            
+            setTimeout(() => {
+                elements.penaltyPopup.style.display = 'none';
+            }, 2000);
+        }
+        
+        // 更新组合显示
+        function updateCombinationDisplay(combination, isAI = false) {
+            elements.combinationDisplay.innerHTML = '';
+            
+            if (combination.length === 0) {
+                if (gameState.currentPlayer === 'player') {
+                    elements.combinationTitle.innerHTML = '<i class="fas fa-list-ol"></i> 当前组合分析';
+                } else {
+                    elements.combinationTitle.innerHTML = '<i class="fas fa-robot"></i> AI组合分析';
+                }
+                elements.totalScoreValue.textContent = '0';
+                elements.totalScoreDisplay.style.display = 'none';
+                return;
+            }
+            
+            let totalScore = 0;
+            combination.forEach(item => {
+                const combinationItem = document.createElement('div');
+                combinationItem.className = `combination-item ${isAI ? 'ai-combination-item' : ''}`;
+                
+                const typeSpan = document.createElement('span');
+                typeSpan.className = `combination-type ${isAI ? 'ai-combination-type' : ''}`;
+                typeSpan.textContent = item.type === 'sequence' ? '连续数' : '叠数';
+                
+                const valuesSpan = document.createElement('span');
+                valuesSpan.className = 'combination-values';
+                
+                if (item.type === 'sequence') {
+                    item.values.forEach((value, idx) => {
+                        const diceSpan = document.createElement('span');
+                        diceSpan.className = `combination-dice ${isAI ? 'ai-combination-dice' : ''}`;
+                        diceSpan.textContent = value;
+                        valuesSpan.appendChild(diceSpan);
+                        if (idx < item.values.length - 1) valuesSpan.appendChild(document.createTextNode(', '));
+                    });
+                } else {
+                    for (let i = 0; i < item.count; i++) {
+                        const diceSpan = document.createElement('span');
+                        diceSpan.className = `combination-dice ${isAI ? 'ai-combination-dice' : ''}`;
+                        diceSpan.textContent = item.value;
+                        valuesSpan.appendChild(diceSpan);
+                        if (i < item.count - 1) valuesSpan.appendChild(document.createTextNode(', '));
+                    }
+                }
+                
+                const scoreSpan = document.createElement('span');
+                scoreSpan.className = 'combination-score';
+                scoreSpan.textContent = `${item.score}分`;
+                
+                combinationItem.appendChild(typeSpan);
+                combinationItem.appendChild(valuesSpan);
+                combinationItem.appendChild(scoreSpan);
+                elements.combinationDisplay.appendChild(combinationItem);
+                totalScore += item.score;
+            });
+            
+            elements.totalScoreValue.textContent = `${totalScore}分`;
+            elements.totalScoreDisplay.style.display = 'flex';
+            elements.combinationTitle.innerHTML = isAI ? '<i class="fas fa-robot"></i> AI组合分析' : '<i class="fas fa-list-ol"></i> 当前组合分析';
+        }
+        
+        // 检查是否有可用组合可选
+        function checkForValidCombinations() {
+            const availableDice = [];
+            for (let i = 0; i < gameState.diceCount; i++) {
+                if (!gameState.selectedDice.includes(i)) {
+                    availableDice.push({index: i, value: gameState.diceValues[i]});
+                }
+            }
+            
+            const valueCounts = {};
+            availableDice.forEach(dice => valueCounts[dice.value] = (valueCounts[dice.value] || 0) + 1);
+            
+            for (const value in valueCounts) if (valueCounts[value] >= 2) return true;
+            
+            const uniqueValues = [...new Set(availableDice.map(d => d.value))].sort((a, b) => a - b);
+            let consecutiveCount = 1;
+            for (let i = 1; i < uniqueValues.length; i++) {
+                if (uniqueValues[i] === uniqueValues[i-1] + 1) {
+                    consecutiveCount++;
+                    if (consecutiveCount >= 3) return true;
+                } else consecutiveCount = 1;
+            }
+            
+            return false;
+        }
+        
+        // 根据选择顺序分析组合
+        function analyzeCombinationByOrder() {
+            if (gameState.currentSequence.length === 0) return [];
+            
+            const orderedValues = gameState.currentSequence.map(i => gameState.diceValues[i]);
+            const groups = [];
+            let currentGroup = [];
+            
+            for (let i = 0; i < orderedValues.length; i++) {
+                if (currentGroup.length === 0) {
+                    currentGroup.push({index: gameState.currentSequence[i], value: orderedValues[i]});
+                } else {
+                    const lastValue = currentGroup[currentGroup.length - 1].value;
+                    const currentValue = orderedValues[i];
+                    const isConsecutive = currentValue === lastValue + 1;
+                    const isSame = currentValue === lastValue;
+                    
+                    if (currentGroup.length === 1) {
+                        if (isConsecutive || isSame) {
+                            currentGroup.push({index: gameState.currentSequence[i], value: currentValue});
+                        } else {
+                            groups.push([...currentGroup]);
+                            currentGroup = [{index: gameState.currentSequence[i], value: currentValue}];
+                        }
+                    } else {
+                        const firstValue = currentGroup[0].value;
+                        const secondValue = currentGroup[1].value;
+                        const isSequenceGroup = secondValue === firstValue + 1;
+                        const isSameGroup = secondValue === firstValue;
+                        
+                        if ((isSequenceGroup && isConsecutive) || (isSameGroup && isSame)) {
+                            currentGroup.push({index: gameState.currentSequence[i], value: currentValue});
+                        } else {
+                            groups.push([...currentGroup]);
+                            currentGroup = [{index: gameState.currentSequence[i], value: currentValue}];
+                        }
+                    }
+                }
+            }
+            
+            if (currentGroup.length > 0) groups.push([...currentGroup]);
+            
+            const combination = [];
+            let isValid = true;
+            
+            for (const group of groups) {
+                if (group.length < 2) { isValid = false; break; }
+                
+                const values = group.map(g => g.value);
+                const firstValue = values[0];
+                const secondValue = values[1];
+                
+                if (secondValue === firstValue + 1) {
+                    let isConsecutive = true;
+                    for (let i = 1; i < values.length; i++) {
+                        if (values[i] !== values[i-1] + 1) { isConsecutive = false; break; }
+                    }
+                    
+                    if (isConsecutive && values.length >= 3) {
+                        combination.push({
+                            type: 'sequence',
+                            values: values,
+                            score: values.length * values.length,
+                            indices: group.map(g => g.index)
+                        });
+                    } else { isValid = false; break; }
+                } else if (secondValue === firstValue) {
+                    let allSame = true;
+                    for (let i = 1; i < values.length; i++) {
+                        if (values[i] !== firstValue) { allSame = false; break; }
+                    }
+                    
+                    if (allSame && values.length >= 2) {
+                        combination.push({
+                            type: 'same',
+                            value: firstValue,
+                            count: values.length,
+                            score: values.length * values.length,
+                            indices: group.map(g => g.index)
+                        });
+                    } else { isValid = false; break; }
+                } else { isValid = false; break; }
+            }
+            
+            return isValid ? combination : [];
+        }
+        
+        // 生成组合字符串
+        function generateCombinationString(combination) {
+            if (!combination || combination.length === 0) return '';
+            return combination.map(item => 
+                item.type === 'sequence' ? item.values.join(',') : Array(item.count).fill(item.value).join(',')
+            ).join('+');
+        }
+        
+        // 选择骰子
+        function selectDice(index) {
+            if (!gameState.gameActive || gameState.currentPlayer !== 'player' || 
+                gameState.selectedDice.includes(index) || !gameState.canSelectNewSequence) return;
+            
+            playSound('diceSelect');
+            
+            if (gameState.currentSequence.includes(index)) {
+                const position = gameState.currentSequence.indexOf(index);
+                gameState.currentSequence.splice(position, 1);
+                updateDiceDisplay();
+                gameState.currentCombination = analyzeCombinationByOrder();
+                updateCombinationDisplay(gameState.currentCombination);
+                updateButtonState();
+                return;
+            }
+            
+            gameState.currentSequence.push(index);
+            updateDiceDisplay();
+            gameState.currentCombination = analyzeCombinationByOrder();
+            updateCombinationDisplay(gameState.currentCombination);
+            updateButtonState();
+        }
+        
+        // 更新按钮状态
+        function updateButtonState() {
+            if (gameState.currentCombination.length === 0) {
+                elements.confirmContinueBtn.disabled = true;
+                elements.confirmEndBtn.disabled = true;
+            } else {
+                const selectedCountInCurrentCombination = gameState.currentCombination.reduce((sum, item) => sum + item.indices.length, 0);
+                const remainingDiceCount = gameState.diceCount - gameState.selectedDice.length - selectedCountInCurrentCombination;
+                
+                if (remainingDiceCount === 1) {
+                    elements.confirmContinueBtn.disabled = true;
+                    elements.confirmEndBtn.disabled = false;
+                } else if (remainingDiceCount === 0) {
+                    elements.confirmContinueBtn.disabled = false;
+                    elements.confirmEndBtn.disabled = false;
+                } else {
+                    elements.confirmContinueBtn.disabled = false;
+                    elements.confirmEndBtn.disabled = false;
+                }
+            }
+        }
+        
+        // 添加日志条目
+        function addLogEntry(who, message, type) {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}-log`;
+            const time = new Date().toLocaleTimeString('zh-CN', {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'});
+            logEntry.innerHTML = `<strong>[${time}] ${who}:</strong> ${message}`;
+            if (elements.logContent.firstChild) elements.logContent.insertBefore(logEntry, elements.logContent.firstChild);
+            else elements.logContent.appendChild(logEntry);
+            
+            document.getElementById('game-log-content').classList.add('expanded');
+            document.getElementById('game-log-icon').style.transform = 'rotate(180deg)';
+        }
+        
+        // 计分并再次投掷
+        function confirmAndContinue() {
+            playSound('buttonClick');
+            if (gameState.currentCombination.length === 0) return;
+            
+            const totalScore = gameState.currentCombination.reduce((sum, item) => sum + item.score, 0);
+            const allIndices = gameState.currentCombination.flatMap(item => item.indices);
+            const descriptionParts = gameState.currentCombination.map(item => 
+                item.type === 'sequence' ? `连续数 ${item.values.join(',')}` : `叠数 ${item.count}个${item.value}`
+            );
+            
+            const uniqueIndices = [...new Set(allIndices)];
+            if (uniqueIndices.length !== allIndices.length) return;
+            
+            gameState.selectedDice.push(...allIndices);
+            gameState.roundScore += totalScore;
+            
+            if (gameState.currentPlayer === 'player') {
+                gameState.playerRoundScore = gameState.roundScore;
+                const currentCombinationString = generateCombinationString(gameState.currentCombination);
+                if (gameState.currentPlayerCombinationString && gameState.currentPlayerCombinationString !== '惩罚归零') {
+                    gameState.currentPlayerCombinationString += '+' + currentCombinationString;
+                } else gameState.currentPlayerCombinationString = currentCombinationString;
+            } else {
+                gameState.aiRoundScore = gameState.roundScore;
+                const currentCombinationString = generateCombinationString(gameState.currentCombination);
+                if (gameState.currentAICombinationString && gameState.currentAICombinationString !== '惩罚归零') {
+                    gameState.currentAICombinationString += '+' + currentCombinationString;
+                } else gameState.currentAICombinationString = currentCombinationString;
+            }
+            
+            addLogEntry(gameState.currentPlayer === 'player' ? '玩家' : 'AI', 
+                       `选择了${descriptionParts.join(' + ')}，获得${totalScore}分，本回合累计${gameState.roundScore}分`, 
+                       gameState.currentPlayer);
+            
+            gameState.currentSequence = [];
+            gameState.currentCombination = [];
+            
+            if (gameState.selectedDice.length === gameState.diceCount) {
+                addLogEntry('系统', '所有骰子都被选择！重置骰子，继续投掷新骰子。', 'system');
+                
+                if (gameState.currentPlayer === 'player') {
+                    gameState.playerFullClearCount++;
+                } else {
+                    gameState.aiFullClearCount++;
+                }
+                
+                gameState.selectedDice = [];
+                gameState.canSelectNewSequence = false;
+                updateDiceDisplay();
+                updateCombinationDisplay([]);
+                updateRoundScoreDisplay();
+                gameState.roundActive = true;
+                disableAllButtons();
+                setTimeout(() => rollDice(), 1000);
+                return;
+            }
+            
+            gameState.canSelectNewSequence = false;
+            updateDiceDisplay();
+            updateCombinationDisplay([]);
+            updateRoundScoreDisplay();
+            gameState.roundActive = true;
+            disableAllButtons();
+            addLogEntry('系统', '将继续投掷剩余骰子...', 'system');
+            setTimeout(() => rollDice(), 1000);
+        }
+        
+        // 计分并结束回合
+        function confirmAndEnd() {
+            playSound('buttonClick');
+            if (gameState.currentCombination.length === 0) return;
+            
+            const totalScore = gameState.currentCombination.reduce((sum, item) => sum + item.score, 0);
+            const allIndices = gameState.currentCombination.flatMap(item => item.indices);
+            const descriptionParts = gameState.currentCombination.map(item => 
+                item.type === 'sequence' ? `连续数 ${item.values.join(',')}` : `叠数 ${item.count}个${item.value}`
+            );
+            
+            const uniqueIndices = [...new Set(allIndices)];
+            if (uniqueIndices.length !== allIndices.length) return;
+            
+            gameState.selectedDice.push(...allIndices);
+            gameState.roundScore += totalScore;
+            
+            if (gameState.currentPlayer === 'player') {
+                gameState.playerRoundScore = gameState.roundScore;
+                const currentCombinationString = generateCombinationString(gameState.currentCombination);
+                if (gameState.currentPlayerCombinationString && gameState.currentPlayerCombinationString !== '惩罚归零') {
+                    gameState.currentPlayerCombinationString += '+' + currentCombinationString;
+                } else gameState.currentPlayerCombinationString = currentCombinationString;
+            } else {
+                gameState.aiRoundScore = gameState.roundScore;
+                const currentCombinationString = generateCombinationString(gameState.currentCombination);
+                if (gameState.currentAICombinationString && gameState.currentAICombinationString !== '惩罚归零') {
+                    gameState.currentAICombinationString += '+' + currentCombinationString;
+                } else gameState.currentAICombinationString = currentCombinationString;
+            }
+            
+            addLogEntry(gameState.currentPlayer === 'player' ? '玩家' : 'AI', 
+                       `选择了${descriptionParts.join(' + ')}，获得${totalScore}分，本回合累计${gameState.roundScore}分，结束本回合。`, 
+                       gameState.currentPlayer);
+            
+            gameState.currentSequence = [];
+            gameState.currentCombination = [];
+            updateDiceDisplay();
+            updateCombinationDisplay([]);
+            updateRoundScoreDisplay();
+            setTimeout(() => endRound(), 1000);
+        }
+        
+        // 结束本回合并计分
+        function endRound() {
+            if (!gameState.gameActive) return;
+            
+            if (gameState.currentPlayer === 'player') {
+                gameState.playerScore += gameState.roundScore;
+                addLogEntry('玩家', `结束回合，获得${gameState.roundScore}分，当前总分: ${gameState.playerScore}`, 'player');
+                if (gameState.playerScore >= gameState.targetScore) addLogEntry('系统', `玩家达到目标分数 ${gameState.targetScore}！`, 'system');
+            } else {
+                gameState.aiScore += gameState.roundScore;
+                addLogEntry('AI', `结束回合，获得${gameState.roundScore}分，当前总分: ${gameState.aiScore}`, 'ai');
+                if (gameState.aiScore >= gameState.targetScore) addLogEntry('系统', `AI达到目标分数 ${gameState.targetScore}！`, 'system');
+            }
+            
+            updateScores();
+            checkRoundEnd();
+            if (!gameState.gameActive) return;
+            
+            if (gameState.currentPlayer === 'ai') {
+                gameState.roundCompleted = true;
+                updateRoundInfoBar();
+                gameState.gameHistory.push({
+                    round: gameState.currentRound,
+                    playerScore: gameState.playerRoundScore,
+                    playerCumulativeScore: gameState.playerScore,
+                    aiScore: gameState.aiRoundScore,
+                    aiCumulativeScore: gameState.aiScore,
+                    playerCombination: gameState.currentPlayerCombinationString || '无有效组合',
+                    aiCombination: gameState.currentAICombinationString || '无有效组合',
+                    playerPenalty: gameState.playerPenaltyThisRound,
+                    aiPenalty: gameState.aiPenaltyThisRound
+                });
+                
+                addLogEntry('系统', `第${gameState.currentRound}回合结束！玩家得分: ${gameState.playerRoundScore}，AI得分: ${gameState.aiRoundScore}`, 'system');
+                
+                setTimeout(() => {
+                    gameState.roundScore = 0; gameState.roundActive = false; gameState.canSelectNewSequence = true;
+                    gameState.currentSequence = []; gameState.currentCombination = []; gameState.selectedDice = [];
+                    gameState.currentPlayerCombinationString = ''; gameState.currentAICombinationString = '';
+                    gameState.playerPenaltyThisRound = false; gameState.aiPenaltyThisRound = false;
+                    gameState.currentRound++; gameState.playerRoundScore = 0; gameState.aiRoundScore = 0; gameState.roundCompleted = false;
+                    gameState.currentPlayer = 'player';
+                    updateRoundInfoBar(); updateTurnHighlight(); updateRoundScoreDisplay();
+                    disableAllButtons();
+                    gameState.diceValues = new Array(gameState.diceCount).fill('?');
+                    createDiceElements(); updateCombinationDisplay([]);
+                    addLogEntry('系统', `第${gameState.currentRound}回合开始！玩家先手。`, 'system');
+                    setTimeout(() => rollDice(), 1000);
+                }, 800);
+            } else {
+                gameState.roundScore = 0; gameState.roundActive = false; gameState.canSelectNewSequence = true;
+                gameState.currentSequence = []; gameState.currentCombination = []; gameState.selectedDice = [];
+                gameState.currentPlayer = 'ai';
+                updateRoundInfoBar(); updateTurnHighlight(); updateRoundScoreDisplay();
+                disableAllButtons();
+                gameState.diceValues = new Array(gameState.diceCount).fill('?');
+                createDiceElements(); updateCombinationDisplay([]);
+                addLogEntry('系统', `轮到AI的回合`, 'system');
+                setTimeout(() => rollDice(), 1500);
+            }
+        }
+        
+        // 检查回合结束条件
+        function checkRoundEnd() {
+            if (!gameState.gameActive) return;
+            if (gameState.currentPlayer === 'ai') {
+                if (gameState.playerScore >= gameState.targetScore || gameState.aiScore >= gameState.targetScore) {
+                    gameState.gameActive = false;
+                    gameState.gameHistory.push({
+                        round: gameState.currentRound,
+                        playerScore: gameState.playerRoundScore,
+                        playerCumulativeScore: gameState.playerScore,
+                        aiScore: gameState.aiRoundScore,
+                        aiCumulativeScore: gameState.aiScore,
+                        playerCombination: gameState.currentPlayerCombinationString || '无有效组合',
+                        aiCombination: gameState.currentAICombinationString || '无有效组合',
+                        playerPenalty: gameState.playerPenaltyThisRound,
+                        aiPenalty: gameState.aiPenaltyThisRound
+                    });
+                    
+                    let winner;
+                    if (gameState.playerScore > gameState.aiScore) winner = 'player';
+                    else if (gameState.aiScore > gameState.playerScore) winner = 'ai';
+                    else winner = 'tie';
+                    endGame(winner);
+                }
+            }
+        }
+        
+        // ==================== 重新设计的AI策略 ====================
+        // 使用递归搜索所有可能的组合，确保找到最优解
+        
+        // 为AI找出所有可能的不重叠组合
+        function findAllValidCombinationsForAI(availableDice) {
+            if (availableDice.length < 2) return [];
+            
+            const diceCount = availableDice.length;
+            const diceValues = availableDice.map(d => d.value);
+            const diceIndices = availableDice.map(d => d.index);
+            
+            // 所有可能的组合集合
+            const allCombinationSets = [];
+            
+            // 递归搜索函数
+            function searchCombinations(currentSet, usedIndices, currentScore, startIndex) {
+                // 保存当前组合集合
+                if (currentSet.length > 0) {
+                    allCombinationSets.push({
+                        combinations: [...currentSet],
+                        totalScore: currentScore,
+                        totalDiceUsed: usedIndices.size
+                    });
+                }
+                
+                // 如果已经用完所有骰子，停止搜索
+                if (usedIndices.size === diceCount) return;
+                
+                // 尝试所有可能的组合
+                for (let i = startIndex; i < diceCount; i++) {
+                    // 跳过已使用的骰子
+                    if (usedIndices.has(diceIndices[i])) continue;
+                    
+                    // 1. 尝试连续数组合
+                    // 查找从当前骰子开始的连续数
+                    for (let len = 3; len <= Math.min(6, diceCount - usedIndices.size); len++) {
+                        // 可能的连续数值
+                        const startValue = diceValues[i];
+                        const sequence = [];
+                        for (let j = 0; j < len; j++) sequence.push(startValue + j);
+                        
+                        // 检查是否能用剩余骰子组成这个序列
+                        const neededIndices = new Set();
+                        const neededValues = [...sequence];
+                        let canFormSequence = true;
+                        
+                        // 为序列中的每个值找一个骰子
+                        for (let j = 0; j < sequence.length; j++) {
+                            const targetValue = sequence[j];
+                            let found = false;
+                            
+                            for (let k = 0; k < diceCount; k++) {
+                                if (!usedIndices.has(diceIndices[k]) && !neededIndices.has(diceIndices[k]) && 
+                                    diceValues[k] === targetValue) {
+                                    neededIndices.add(diceIndices[k]);
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!found) {
+                                canFormSequence = false;
+                                break;
+                            }
+                        }
+                        
+                        if (canFormSequence && neededIndices.size === sequence.length) {
+                            const newUsedIndices = new Set([...usedIndices, ...neededIndices]);
+                            const newSet = [...currentSet, {
+                                type: 'sequence',
+                                values: sequence,
+                                score: sequence.length * sequence.length,
+                                indices: Array.from(neededIndices),
+                                diceUsed: sequence.length
+                            }];
+                            
+                            searchCombinations(newSet, newUsedIndices, currentScore + sequence.length * sequence.length, i + 1);
+                        }
+                    }
+                    
+                    // 2. 尝试叠数组合
+                    // 统计当前值在剩余骰子中的数量
+                    const currentValue = diceValues[i];
+                    let sameValueCount = 0;
+                    const sameValueIndices = [];
+                    
+                    for (let j = 0; j < diceCount; j++) {
+                        if (!usedIndices.has(diceIndices[j]) && diceValues[j] === currentValue) {
+                            sameValueCount++;
+                            sameValueIndices.push(diceIndices[j]);
+                        }
+                    }
+                    
+                    // 尝试所有可能的叠数大小（2到最大数量）
+                    for (let n = 2; n <= sameValueCount; n++) {
+                        const selectedIndices = sameValueIndices.slice(0, n);
+                        const newUsedIndices = new Set([...usedIndices, ...selectedIndices]);
+                        const newSet = [...currentSet, {
+                            type: 'same',
+                            value: currentValue,
+                            count: n,
+                            score: n * n,
+                            indices: selectedIndices,
+                            diceUsed: n
+                        }];
+                        
+                        searchCombinations(newSet, newUsedIndices, currentScore + n * n, i + 1);
+                    }
+                }
+            }
+            
+            // 开始搜索
+            searchCombinations([], new Set(), 0, 0);
+            
+            if (allCombinationSets.length === 0) return [];
+            
+            // 按总分排序，分数相同的按使用骰子数多的优先
+            allCombinationSets.sort((a, b) => {
+                if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+                return b.totalDiceUsed - a.totalDiceUsed;
+            });
+            
+            // 返回前10个最佳组合集合（避免组合爆炸）
+            return allCombinationSets.slice(0, 10);
+        }
+        
+        // AI选择组合
+        function aiSelectCombination() {
+            if (!gameState.gameActive || gameState.currentPlayer !== 'ai') return;
+            
+            const availableDice = [];
+            for (let i = 0; i < gameState.diceCount; i++) {
+                if (!gameState.selectedDice.includes(i)) {
+                    availableDice.push({index: i, value: gameState.diceValues[i]});
+                }
+            }
+            
+            const allCombinationSets = findAllValidCombinationsForAI(availableDice);
+            
+            if (allCombinationSets.length > 0 && allCombinationSets[0].combinations.length > 0) {
+                const bestSet = allCombinationSets[0];
+                const selectedCombinations = bestSet.combinations;
+                
+                // 将所有组合的骰子索引合并
+                const allIndices = selectedCombinations.flatMap(comb => comb.indices);
+                
+                // 设置当前组合和选择的骰子
+                gameState.currentCombination = selectedCombinations.map(comb => ({
+                    type: comb.type,
+                    value: comb.value,
+                    values: comb.values,
+                    count: comb.count,
+                    score: comb.score,
+                    indices: comb.indices
+                }));
+                
+                gameState.currentSequence = allIndices;
+                
+                // 模拟AI点击骰子
+                simulateAIDiceSelection(allIndices);
+                
+                // 智能决策逻辑
+                let shouldContinue = false;
+                const diceLeftAfterSelection = availableDice.length - allIndices.length;
+                
+                // 基于剩余骰子数量的明确分类
+                if (allIndices.length === availableDice.length) {
+                    // 情况1：全清骰子（剩余0个）→ 必须继续（奖励重投）
+                    shouldContinue = true;
+                }
+                else if (diceLeftAfterSelection === 1) {
+                    // 情况2：只剩1个骰子 → 必须结束（规则禁止继续）
+                    shouldContinue = false;
+                }
+                else if (diceLeftAfterSelection >= 2 && diceLeftAfterSelection <= 4) {
+                    // 情况3：剩余2-4个骰子 → 按风险策略决策
+                    let continueChance = 0;
+                    
+                    if (diceLeftAfterSelection === 2) {
+                        continueChance = 0.05;
+                    } else if (diceLeftAfterSelection === 3) {
+                        continueChance = 0.2;
+                    } else if (diceLeftAfterSelection === 4) {
+                        continueChance = 0.4;
+                    }
+                    
+                    const currentScore = bestSet.totalScore;
+                    if (currentScore >= 20) continueChance *= 0.5;
+                    else if (currentScore >= 15) continueChance *= 0.8;
+                    
+                    if (currentScore <= 8 && diceLeftAfterSelection >= 4) {
+                        continueChance = Math.max(continueChance, 0.5);
+                    }
+                    
+                    shouldContinue = Math.random() < continueChance;
+                }
+                
+                setTimeout(() => {
+                    if (shouldContinue) {
+                        setTimeout(() => confirmAndContinue(), 800);
+                    } else {
+                        setTimeout(() => confirmAndEnd(), 800);
+                    }
+                }, 1800);
+            } else {
+                addLogEntry('AI', '没有找到有效组合，本回合无分', 'ai');
+                gameState.currentAICombinationString = '无有效组合';
+                setTimeout(() => endRound(), 1500);
+            }
+        }
+        
+        // 模拟AI点击骰子
+        function simulateAIDiceSelection(indices) {
+            indices.forEach(index => {
+                const diceElement = document.querySelector(`.dice[data-index="${index}"]`);
+                if (diceElement) {
+                    diceElement.classList.remove('selected');
+                    diceElement.classList.add('ai-selected');
+                }
+            });
+            
+            setTimeout(() => {
+                updateCombinationDisplay(gameState.currentCombination, true);
+                playSound('diceSelect');
+            }, 1000);
+        }
+        
+        // 禁用所有按钮
+        function disableAllButtons() {
+            elements.confirmContinueBtn.disabled = true;
+            elements.confirmEndBtn.disabled = true;
+        }
+        
+        // 更新分数显示
+        function updateScores() {
+            elements.playerScore.textContent = gameState.playerScore;
+            elements.aiScore.textContent = gameState.aiScore;
+            elements.targetScore.textContent = gameState.targetScore;
+        }
+        
+        // 更新回合分数显示
+        function updateRoundScoreDisplay() {
+            if (gameState.currentPlayer === 'player') {
+                elements.playerRoundScore.textContent = `本回合: ${gameState.roundScore}`;
+                elements.aiRoundScore.textContent = `本回合: ${gameState.currentRound > 1 ? gameState.aiRoundScore : 0}`;
+            } else {
+                elements.playerRoundScore.textContent = `本回合: ${gameState.playerRoundScore}`;
+                elements.aiRoundScore.textContent = `本回合: ${gameState.roundScore}`;
+            }
+        }
+        
+        // 更新历史表格
+        function updateHistoryTable() {
+            elements.historyBody.innerHTML = '';
+            gameState.gameHistory.forEach(round => {
+                const row = document.createElement('tr');
+                
+                const createCell = (text, className) => {
+                    const cell = document.createElement('td');
+                    cell.textContent = text;
+                    if (className) cell.className = className;
+                    return cell;
+                };
+                
+                row.appendChild(createCell(round.round));
+                row.appendChild(createCell('玩家', 'player-round'));
+                row.appendChild(createCell(round.playerPenalty ? '惩罚归零' : round.playerCombination, 'round-combination player-round'));
+                row.appendChild(createCell(round.playerPenalty ? 0 : round.playerScore, 'player-round'));
+                row.appendChild(createCell(round.playerCumulativeScore, 'player-round'));
+                row.appendChild(createCell('AI', 'ai-round'));
+                row.appendChild(createCell(round.aiPenalty ? '惩罚归零' : round.aiCombination, 'round-combination ai-round'));
+                row.appendChild(createCell(round.aiPenalty ? 0 : round.aiScore, 'ai-round'));
+                row.appendChild(createCell(round.aiCumulativeScore, 'ai-round'));
+                
+                elements.historyBody.appendChild(row);
+            });
+        }
+        
+        // 更新游戏结束界面统计信息
+        function updateGameOverStats() {
+            elements.finalPlayerScore.textContent = `玩家: ${gameState.playerScore}`;
+            elements.finalAiScore.textContent = `AI: ${gameState.aiScore}`;
+            const totalRounds = gameState.gameHistory.length;
+            
+            elements.totalRoundsDisplay.textContent = `总回合数: ${totalRounds}`;
+            
+            if (totalRounds > 0) {
+                const playerTotalScore = gameState.gameHistory.reduce((sum, round) => sum + round.playerScore, 0);
+                elements.playerAvgScore.textContent = Math.round(playerTotalScore / totalRounds);
+                elements.playerMaxScore.textContent = Math.max(...gameState.gameHistory.map(round => round.playerScore));
+                
+                const aiTotalScore = gameState.gameHistory.reduce((sum, round) => sum + round.aiScore, 0);
+                elements.aiAvgScore.textContent = Math.round(aiTotalScore / totalRounds);
+                elements.aiMaxScore.textContent = Math.max(...gameState.gameHistory.map(round => round.aiScore));
+            } else {
+                elements.playerAvgScore.textContent = 0;
+                elements.playerMaxScore.textContent = 0;
+                elements.aiAvgScore.textContent = 0;
+                elements.aiMaxScore.textContent = 0;
+            }
+            
+            // 更新统计项
+            elements.playerFullClear.textContent = gameState.playerFullClearCount;
+            elements.aiFullClear.textContent = gameState.aiFullClearCount;
+        }
+        
+        // 结束游戏
+        function endGame(winner) {
+            gameState.gameActive = false;
+            updateGameOverStats();
+            elements.gameOverElement.style.display = 'flex';
+            
+            if (winner === 'player') {
+                elements.winnerMessage.textContent = '恭喜！玩家获胜！';
+                elements.winnerMessage.className = 'winner-message player-winner';
+                addLogEntry('系统', `游戏结束！玩家以${gameState.playerScore}:${gameState.aiScore}获胜！`, 'system');
+                setTimeout(() => playSound('win'), 500);
+            } else if (winner === 'ai') {
+                elements.winnerMessage.textContent = 'AI对手获胜！';
+                elements.winnerMessage.className = 'winner-message ai-winner';
+                addLogEntry('系统', `游戏结束！AI以${gameState.aiScore}:${gameState.playerScore}获胜！`, 'system');
+                setTimeout(() => playSound('lose'), 500);
+            } else {
+                elements.winnerMessage.textContent = '平局！';
+                elements.winnerMessage.className = 'winner-message tie-winner';
+                addLogEntry('系统', `游戏结束！双方平局${gameState.playerScore}:${gameState.aiScore}！`, 'system');
+                setTimeout(() => playSound('score'), 500);
+            }
+        }
+        
+        // 事件监听
+        elements.confirmContinueBtn.addEventListener('click', confirmAndContinue);
+        elements.confirmEndBtn.addEventListener('click', confirmAndEnd);
+        elements.restartBtn.addEventListener('click', initGame);
+        
+        // 为所有按钮添加音效
+        document.querySelectorAll('button').forEach(button => {
+            if (button.id !== 'sound-control') {
+                button.addEventListener('click', function() {
+                    if (!this.disabled) playSound('buttonClick');
+                });
+            }
+        });
+        
+        // 初始化游戏
+        initGame();
+    </script>
+</body>
+</html>
