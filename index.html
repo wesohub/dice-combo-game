@@ -521,7 +521,7 @@
                 <div class="rules-section">
                     <h3 class="rules-section-title"><i class="fas fa-gamepad"></i> 核心操作</h3>
                     <ul class="rules-list">
-                        <li>每回合自动投掷骰子，<span class="important">必须按从小到大的顺序</span>点击骰子选择</li>
+                        <li>每回合自动投掷骰子，<span class="important">必须按点数从小到大的顺序</span>点击骰子进行选择</li>
                         <li>再次点击已选骰子，可取消选择</li>
                     </ul>
                 </div>
@@ -530,22 +530,22 @@
                     <h3 class="rules-section-title"><i class="fas fa-calculator"></i> 分组与计分</h3>
                     <ul class="rules-list">
                         <li><span class="highlight">系统自动分组：</span></li>
-                        <li><span class="important">至少3个</span>连续选择的 <span class="important">"连续数字"</span> = 连续数</li>
-                        <li><span class="important">至少2个</span>连续选择的 <span class="important">"相同数字"</span> = 叠数</li>
-                        <li><span class="important">优先级：</span>先点击的组合先计分</li>
+                        <li><span class="important">至少3个</span>连续选择的 <span class="important">"连续点数"</span> = 连续数</li>
+                        <li><span class="important">至少2个</span>连续选择的 <span class="important">"相同点数"</span> = 叠数</li>
+                        <li><span class="important">优先级：</span>先点击的点数优先成组</li>
                     </ul>
                     <div class="rules-highlight">
                         <div class="rules-highlight-title"><i class="fas fa-bullseye"></i> 计分公式</div>
-                        <div>连续数个数² + 叠数个数²</div>
-                        <div class="rules-example">例：选 123+44 = 3² + 2² = 9 + 4 = 13 分</div>
+                        <div>组合内骰子个数的平方，两种组合可同时计分</div>
+                        <div class="rules-example">例：选 123+55 = 3² + 2² = 9 + 4 = 13 分</div>
                     </div>
                 </div>
                 
                 <div class="rules-section">
                     <h3 class="rules-section-title"><i class="fas fa-play-circle"></i> 按钮功能</h3>
                     <ul class="rules-list">
-                        <li><span class="important">『计分并再次投掷』：</span>当前组合加分，继续投剩余骰子</li>
-                        <li><span class="important">『计分并结束回合』：</span>当前组合加分，直接结束本回合</li>
+                        <li><span class="important">『计分并再次投掷』：</span>当前组合计分，继续投剩余骰子</li>
+                        <li><span class="important">『计分并结束回合』：</span>当前组合计分，直接结束本回合</li>
                     </ul>
                 </div>
                 
@@ -553,7 +553,7 @@
                     <h3 class="rules-section-title"><i class="fas fa-star"></i> 特殊规则</h3>
                     <ul class="rules-list">
                         <li><span class="warning">剩余 1 个骰子时</span>，只能点击『计分并结束回合』，不能继续投掷</li>
-                        <li>若 1 回合内 6 个骰子全计分，可用『计分并再次投掷』重投 6 个新骰子<span class="highlight">（运气奖励）</span>，可循环使用</li>
+                        <li>若 6 个骰子全部计分，可用『计分并再次投掷』投掷 6 个新骰子<span class="highlight">（运气奖励）</span>，可循环使用</li>
                     </ul>
                 </div>
                 
