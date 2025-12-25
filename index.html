@@ -1264,17 +1264,19 @@
             const btn = e.currentTarget;
             if (btn.disabled) return;
             
-            // 触发相应的按钮功能
-            if (btn.id === 'confirm-continue-btn') {
-                confirmAndContinue();
-            } else if (btn.id === 'confirm-end-btn') {
-                confirmAndEnd();
-            }
+            // 立即触发按钮功能，但确保动画不受影响
+            setTimeout(() => {
+                if (btn.id === 'confirm-continue-btn') {
+                    confirmAndContinue();
+                } else if (btn.id === 'confirm-end-btn') {
+                    confirmAndEnd();
+                }
+            }, 0); // 在下一个事件循环中执行，不影响动画
             
             // 延迟移除触摸激活类，确保动画有足够时间显示
             setTimeout(() => {
                 btn.classList.remove('touch-active');
-            }, 100);
+            }, 100); // 固定100ms的动画时间，与按钮功能执行时间无关
         }
         
         // 触摸取消事件处理函数
@@ -1767,15 +1769,50 @@
             gameState.currentSequence = [];
             gameState.currentCombination = [];
             
-            // 奖励重投逻辑（7个骰子全部计分）
-            if (gameState.selectedDice.length === gameState.diceCount) {
-                if (gameState.currentPlayer === 'player') {
-                    gameState.playerFullClearCount++;
-                } else {
-                    gameState.aiFullClearCount++;
+            // 延迟禁用按钮，确保动画完成
+            setTimeout(() => {
+                // 奖励重投逻辑（7个骰子全部计分）
+                if (gameState.selectedDice.length === gameState.diceCount) {
+                    if (gameState.currentPlayer === 'player') {
+                        gameState.playerFullClearCount++;
+                    } else {
+                        gameState.aiFullClearCount++;
+                    }
+                    
+                    // 先让骰子显示为打出状态（缩小、灰色、右上角有红叉）
+                    gameState.canSelectNewSequence = false;
+                    updateDiceDisplay();
+                    updateScoreTableHighlight();
+                    updateRoundScoreDisplay();
+                    gameState.roundActive = true;
+                    disableAllButtons();
+                    
+                    // 延迟一段时间后，重置骰子为问号状态，然后重投
+                    setTimeout(() => {
+                        // 重置所有骰子值为问号
+                        for (let i = 0; i < gameState.diceCount; i++) {
+                            gameState.diceValues[i] = '?';
+                        }
+                        
+                        // 清空已选择的骰子，准备重投
+                        gameState.selectedDice = [];
+                        gameState.currentSequence = [];
+                        gameState.currentCombination = [];
+                        
+                        // 更新显示为问号（白色）
+                        updateDiceDisplay();
+                        updateScoreTableHighlight();
+                        
+                        // 延迟后重投骰子
+                        setTimeout(() => {
+                            rollDice();
+                            gameState.buttonCooldown = false;
+                        }, 500);
+                    }, 1000);
+                    return;
                 }
                 
-                // 先让骰子显示为打出状态（缩小、灰色、右上角有红叉）
+                // 普通重投逻辑（不是所有骰子都被计分）
                 gameState.canSelectNewSequence = false;
                 updateDiceDisplay();
                 updateScoreTableHighlight();
@@ -1783,55 +1820,23 @@
                 gameState.roundActive = true;
                 disableAllButtons();
                 
-                // 延迟一段时间后，重置骰子为问号状态，然后重投
-                setTimeout(() => {
-                    // 重置所有骰子值为问号
-                    for (let i = 0; i < gameState.diceCount; i++) {
+                // 将剩余的骰子（没有被选中的骰子）设置为问号
+                for (let i = 0; i < gameState.diceCount; i++) {
+                    if (!gameState.selectedDice.includes(i)) {
                         gameState.diceValues[i] = '?';
                     }
-                    
-                    // 清空已选择的骰子，准备重投
-                    gameState.selectedDice = [];
-                    gameState.currentSequence = [];
-                    gameState.currentCombination = [];
-                    
-                    // 更新显示为问号（白色）
-                    updateDiceDisplay();
-                    updateScoreTableHighlight();
-                    
-                    // 延迟后重投骰子
-                    setTimeout(() => {
-                        rollDice();
-                        gameState.buttonCooldown = false;
-                    }, 500);
-                }, 1000);
-                return;
-            }
-            
-            // 普通重投逻辑（不是所有骰子都被计分）
-            gameState.canSelectNewSequence = false;
-            updateDiceDisplay();
-            updateScoreTableHighlight();
-            updateRoundScoreDisplay();
-            gameState.roundActive = true;
-            disableAllButtons();
-            
-            // 将剩余的骰子（没有被选中的骰子）设置为问号
-            for (let i = 0; i < gameState.diceCount; i++) {
-                if (!gameState.selectedDice.includes(i)) {
-                    gameState.diceValues[i] = '?';
                 }
-            }
-            
-            // 更新显示为问号（白色）
-            updateDiceDisplay();
-            updateScoreTableHighlight();
-            
-            // 延迟后重投骰子
-            setTimeout(() => {
-                rollDice();
-                gameState.buttonCooldown = false;
-            }, 1000);
+                
+                // 更新显示为问号（白色）
+                updateDiceDisplay();
+                updateScoreTableHighlight();
+                
+                // 延迟后重投骰子
+                setTimeout(() => {
+                    rollDice();
+                    gameState.buttonCooldown = false;
+                }, 1000);
+            }, 100); // 与动画时间相同，确保动画完成后再进行后续操作
         }
         
         // 计分并结束回合 - 修复计分逻辑
@@ -1895,13 +1900,18 @@
             
             gameState.currentSequence = [];
             gameState.currentCombination = [];
-            updateDiceDisplay();
-            updateScoreTableHighlight();
-            updateRoundScoreDisplay();
+            
+            // 延迟执行后续操作，确保动画完成
             setTimeout(() => {
-                endRound();
-                gameState.buttonCooldown = false;
-            }, 1000);
+                updateDiceDisplay();
+                updateScoreTableHighlight();
+                updateRoundScoreDisplay();
+                disableAllButtons(); // 添加禁用按钮，保持与confirmAndContinue一致
+                setTimeout(() => {
+                    endRound();
+                    gameState.buttonCooldown = false;
+                }, 1000);
+            }, 100); // 与动画时间相同，确保动画完成后再进行后续操作
         }
         
         // 结束本回合并计分
