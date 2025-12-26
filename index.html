@@ -312,18 +312,135 @@
         .warning { color: #ff6b6b; font-weight: bold; }
         .important { color: #4ecdc4; font-weight: bold; }
         
-        .history-table-container { margin-top: 15px; overflow-x: auto; }
-        .history-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
+        /* 历史记录弹窗样式更新 */
+        .history-modal-content {
+            max-width: 95%;
+            width: 95%;
+            max-height: 90vh;
+        }
         
-        .history-table th { background: rgba(60, 60, 80, 0.9); color: #ffd166; padding: 12px 8px; text-align: center; position: sticky; top: 0; z-index: 1; font-size: 0.9rem; border-bottom: 2px solid rgba(255, 209, 102, 0.3); }
-        .history-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .history-header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .history-nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        .history-nav-btn {
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            color: #222;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1rem;
+        }
+        
+        .history-nav-btn:hover {
+            background: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%);
+            transform: scale(1.05);
+        }
+        
+        .history-nav-btn:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .history-time-display {
+            font-size: 1rem;
+            color: #ffd166;
+            font-weight: bold;
+            text-align: center;
+            min-width: 200px;
+        }
+        
+        .history-table-container {
+            margin-top: 15px;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #3a3a4e;
+            max-height: calc(90vh - 180px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.85rem;
+            table-layout: fixed;
+        }
+        
+        .history-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .history-table th {
+            background: rgba(60, 60, 80, 0.95);
+            color: #ffd166;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-bottom: 2px solid rgba(255, 209, 102, 0.3);
+            position: sticky;
+            top: 0;
+        }
+        
+        .history-table tbody {
+            overflow-y: auto;
+            display: block;
+            max-height: calc(90vh - 250px);
+        }
+        
+        .history-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        
+        .history-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(40, 40, 60, 0.8);
+        }
+        
         .history-table tr:last-child td { border-bottom: none; }
-        .history-table tr:hover { background: rgba(255, 255, 255, 0.05); }
+        .history-table tr:hover td { background: rgba(255, 255, 255, 0.05); }
         
         .player-round { color: #4ecdc4; font-weight: bold; }
         .ai-round { color: #ff6b6b; font-weight: bold; }
         
-        .round-combination { max-width: 200px; word-break: break-word; font-size: 0.8rem; line-height: 1.4; }
+        .round-combination { 
+            max-width: 200px; 
+            word-break: break-word; 
+            font-size: 0.8rem; 
+            line-height: 1.4; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
         .penalty-text { color: #ff6b6b; font-weight: bold; }
         
         .penalty-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%); color: white; padding: 16px; border-radius: 10px; z-index: 200; text-align: center; box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5); display: none; animation: popIn 0.5s ease-out; }
@@ -612,6 +729,36 @@
             .score-table-points { font-size: 0.9rem; }
             .score-table-badge { width: 16px; height: 16px; font-size: 0.65rem; }
             .game-credit { bottom: 10px; right: 10px; font-size: 0.65rem; }
+            
+            /* 历史记录弹窗响应式 */
+            .history-modal-content {
+                max-width: 98%;
+                width: 98%;
+                max-height: 85vh;
+            }
+            
+            .history-table-container {
+                max-height: calc(85vh - 180px);
+            }
+            
+            .history-table tbody {
+                max-height: calc(85vh - 250px);
+            }
+            
+            .history-time-display {
+                font-size: 0.9rem;
+                min-width: 150px;
+            }
+            
+            .history-nav-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            .history-nav {
+                gap: 10px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -638,6 +785,18 @@
             .winner-message { font-size: 1.3rem; gap: 8px; }
             .final-score-display { font-size: 1rem; gap: 10px; }
             .game-credit { font-size: 0.6rem; }
+            
+            /* 历史记录弹窗响应式 */
+            .history-time-display {
+                font-size: 0.8rem;
+                min-width: 120px;
+            }
+            
+            .history-nav-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
         }
         
         /* PC端骰子更大，点稍微小一点 */
@@ -651,6 +810,11 @@
         .log-content::-webkit-scrollbar, .modal-content::-webkit-scrollbar { width: 6px; }
         .log-content::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { background: rgba(60, 60, 80, 0.5); border-radius: 3px; }
         .log-content::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb { background: #ffd166; border-radius: 3px; }
+        
+        /* 历史记录表格滚动条 */
+        .history-table-container::-webkit-scrollbar { width: 6px; }
+        .history-table-container::-webkit-scrollbar-track { background: rgba(60, 60, 80, 0.5); border-radius: 3px; }
+        .history-table-container::-webkit-scrollbar-thumb { background: #ffd166; border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -804,24 +968,36 @@
         <div class="overlay-close-hint" id="rules-close-hint">点击空白处返回</div>
     </div>
     
+    <!-- 历史记录弹窗 -->
     <div class="overlay round-history-modal" id="history-overlay">
-        <div class="modal-content" id="history-modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title"><i class="fas fa-history"></i> 回合历史记录</h2>
+        <div class="modal-content history-modal-content" id="history-modal-content">
+            <div class="history-header-controls">
+                <div class="history-nav">
+                    <button class="history-nav-btn" id="history-left-btn" title="上一个记录">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="history-time-display" id="history-time-display">
+                        当前游戏
+                    </div>
+                    <button class="history-nav-btn" id="history-right-btn" title="下一个记录">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
             </div>
+            
             <div class="history-table-container">
                 <table class="history-table" id="history-table">
                     <thead>
                         <tr>
-                            <th>回合</th>
-                            <th>玩家</th>
-                            <th>组合详情</th>
-                            <th>得分</th>
-                            <th>累计</th>
-                            <th>AI</th>
-                            <th>组合详情</th>
-                            <th>得分</th>
-                            <th>累计</th>
+                            <th style="width: 8%">回合</th>
+                            <th style="width: 8%">玩家</th>
+                            <th style="width: 24%">组合详情</th>
+                            <th style="width: 8%">得分</th>
+                            <th style="width: 8%">累计</th>
+                            <th style="width: 8%">AI</th>
+                            <th style="width: 24%">组合详情</th>
+                            <th style="width: 8%">得分</th>
+                            <th style="width: 8%">累计</th>
                         </tr>
                     </thead>
                     <tbody id="history-body"></tbody>
@@ -930,6 +1106,165 @@
             aiFullClearCount: 0
         };
         
+        // 历史记录存储
+        const historyManager = {
+            storageKey: 'diceComboHistory',
+            maxHistoryCount: 10,
+            currentHistoryIndex: 0,
+            historyList: [],
+            currentGameHistory: null, // 当前游戏历史记录（临时）
+            
+            // 从本地存储加载历史记录
+            loadHistory: function() {
+                try {
+                    const stored = localStorage.getItem(this.storageKey);
+                    if (stored) {
+                        this.historyList = JSON.parse(stored);
+                        // 确保历史记录数量不超过最大值
+                        if (this.historyList.length > this.maxHistoryCount) {
+                            this.historyList = this.historyList.slice(0, this.maxHistoryCount);
+                        }
+                    } else {
+                        this.historyList = [];
+                    }
+                } catch (e) {
+                    console.error("加载历史记录失败:", e);
+                    this.historyList = [];
+                }
+            },
+            
+            // 保存历史记录到本地存储
+            saveHistory: function() {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(this.historyList));
+                } catch (e) {
+                    console.error("保存历史记录失败:", e);
+                }
+            },
+            
+            // 设置当前游戏历史记录
+            setCurrentGameHistory: function(gameData) {
+                this.currentGameHistory = {
+                    id: 'current',
+                    timestamp: new Date().toISOString(),
+                    date: '当前游戏',
+                    playerScore: gameData.playerScore,
+                    aiScore: gameData.aiScore,
+                    winner: gameData.winner,
+                    winnerText: gameData.winnerText,
+                    totalRounds: gameData.totalRounds,
+                    playerAvgScore: gameData.playerAvgScore,
+                    aiAvgScore: gameData.aiAvgScore,
+                    playerMaxScore: gameData.playerMaxScore,
+                    aiMaxScore: gameData.aiMaxScore,
+                    playerFullClear: gameData.playerFullClear,
+                    aiFullClear: gameData.aiFullClear,
+                    rounds: [...gameData.rounds]
+                };
+            },
+            
+            // 添加历史记录到存储列表
+            addHistory: function(gameData) {
+                const historyEntry = {
+                    id: Date.now(),
+                    timestamp: new Date().toISOString(),
+                    date: this.formatDate(new Date()),
+                    playerScore: gameData.playerScore,
+                    aiScore: gameData.aiScore,
+                    winner: gameData.winner,
+                    winnerText: gameData.winnerText,
+                    totalRounds: gameData.totalRounds,
+                    playerAvgScore: gameData.playerAvgScore,
+                    aiAvgScore: gameData.aiAvgScore,
+                    playerMaxScore: gameData.playerMaxScore,
+                    aiMaxScore: gameData.aiMaxScore,
+                    playerFullClear: gameData.playerFullClear,
+                    aiFullClear: gameData.aiFullClear,
+                    rounds: [...gameData.rounds]
+                };
+                
+                // 添加到历史列表开头
+                this.historyList.unshift(historyEntry);
+                
+                // 限制历史记录数量
+                if (this.historyList.length > this.maxHistoryCount) {
+                    this.historyList = this.historyList.slice(0, this.maxHistoryCount);
+                }
+                
+                // 保存到本地存储
+                this.saveHistory();
+                
+                // 清空当前游戏历史记录
+                this.currentGameHistory = null;
+            },
+            
+            // 格式化日期
+            formatDate: function(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${year}/${month}/${day} ${hours}:${minutes}`;
+            },
+            
+            // 获取所有可显示的历史记录（当前游戏+存储的历史）
+            getAllDisplayHistories: function() {
+                const displayList = [];
+                
+                // 如果有当前游戏历史记录，添加到显示列表
+                if (this.currentGameHistory) {
+                    displayList.push(this.currentGameHistory);
+                }
+                
+                // 添加存储的历史记录
+                displayList.push(...this.historyList);
+                
+                return displayList;
+            },
+            
+            // 获取当前显示的历史记录
+            getCurrentHistory: function() {
+                const displayList = this.getAllDisplayHistories();
+                if (displayList.length === 0) return null;
+                return displayList[this.currentHistoryIndex];
+            },
+            
+            // 导航到上一个历史记录
+            getPrevHistory: function() {
+                const displayList = this.getAllDisplayHistories();
+                if (displayList.length === 0) return null;
+                
+                this.currentHistoryIndex = (this.currentHistoryIndex + 1) % displayList.length;
+                return displayList[this.currentHistoryIndex];
+            },
+            
+            // 导航到下一个历史记录
+            getNextHistory: function() {
+                const displayList = this.getAllDisplayHistories();
+                if (displayList.length === 0) return null;
+                
+                this.currentHistoryIndex = (this.currentHistoryIndex - 1 + displayList.length) % displayList.length;
+                return displayList[this.currentHistoryIndex];
+            },
+            
+            // 重置到第一个历史记录（当前游戏记录）
+            resetToFirst: function() {
+                this.currentHistoryIndex = 0;
+            },
+            
+            // 获取历史记录数量
+            getHistoryCount: function() {
+                const displayList = this.getAllDisplayHistories();
+                return displayList.length;
+            },
+            
+            // 清空当前游戏历史记录
+            clearCurrentGameHistory: function() {
+                this.currentGameHistory = null;
+            }
+        };
+        
         // 计分规则 - 包含7叠500分，共10个计分组
         const scoringRules = [
             { type: 'same', count: 2, name: '2叠', score: 10, icon: 'fas fa-layer-group' },
@@ -992,7 +1327,11 @@
             historyModalContent: document.getElementById('history-modal-content'),
             playerFullClear: document.getElementById('player-full-clear'),
             aiFullClear: document.getElementById('ai-full-clear'),
-            scoreTableGrid: document.getElementById('score-table-grid')
+            scoreTableGrid: document.getElementById('score-table-grid'),
+            // 新增历史记录相关元素
+            historyTimeDisplay: document.getElementById('history-time-display'),
+            historyLeftBtn: document.getElementById('history-left-btn'),
+            historyRightBtn: document.getElementById('history-right-btn')
         };
         
         // 计分表项状态
@@ -1158,14 +1497,12 @@
         });
         
         elements.historyButton.addEventListener('click', () => {
-            elements.historyOverlay.style.display = 'flex';
-            updateHistoryTable();
+            openHistoryModal();
             playSound('buttonClick');
         });
         
         elements.gameOverHistoryBtn.addEventListener('click', () => {
-            elements.historyOverlay.style.display = 'flex';
-            updateHistoryTable();
+            openHistoryModal();
             playSound('buttonClick');
         });
         
@@ -1329,6 +1666,12 @@
                 aiFullClearCount: 0,
                 buttonCooldown: false
             });
+            
+            // 加载历史记录
+            historyManager.loadHistory();
+            
+            // 清空当前游戏历史记录
+            historyManager.clearCurrentGameHistory();
             
             updateScores();
             updateRoundScoreDisplay();
@@ -2531,10 +2874,25 @@
             }
         }
         
-        // 更新历史表格
-        function updateHistoryTable() {
+        // 更新历史记录表格
+        function updateHistoryTable(historyData) {
             elements.historyBody.innerHTML = '';
-            gameState.gameHistory.forEach(round => {
+            
+            if (!historyData || !historyData.rounds || historyData.rounds.length === 0) {
+                // 如果没有历史记录，显示空状态
+                const emptyRow = document.createElement('tr');
+                const emptyCell = document.createElement('td');
+                emptyCell.colSpan = 9;
+                emptyCell.textContent = '暂无历史记录数据';
+                emptyCell.style.textAlign = 'center';
+                emptyCell.style.padding = '20px';
+                emptyCell.style.color = '#888';
+                emptyRow.appendChild(emptyCell);
+                elements.historyBody.appendChild(emptyRow);
+                return;
+            }
+            
+            historyData.rounds.forEach(round => {
                 const row = document.createElement('tr');
                 
                 const createCell = (text, className) => {
@@ -2556,6 +2914,87 @@
                 
                 elements.historyBody.appendChild(row);
             });
+        }
+        
+        // 更新历史记录导航
+        function updateHistoryNav() {
+            const currentHistory = historyManager.getCurrentHistory();
+            const historyCount = historyManager.getHistoryCount();
+            
+            // 更新导航按钮状态
+            elements.historyLeftBtn.disabled = historyCount <= 1;
+            elements.historyRightBtn.disabled = historyCount <= 1;
+            
+            if (historyCount === 0) {
+                elements.historyTimeDisplay.textContent = '暂无历史记录';
+                elements.historyTimeDisplay.style.color = '#888';
+            } else {
+                // 更新时间显示
+                elements.historyTimeDisplay.textContent = currentHistory.date;
+                elements.historyTimeDisplay.style.color = '#ffd166';
+                
+                // 显示当前记录位置（如：1/3）
+                const positionDisplay = ` (${historyManager.currentHistoryIndex + 1}/${historyCount})`;
+                elements.historyTimeDisplay.textContent += positionDisplay;
+            }
+        }
+        
+        // 打开历史记录弹窗
+        function openHistoryModal() {
+            // 如果游戏正在进行中，设置当前游戏历史记录
+            if (gameState.gameActive && gameState.gameHistory.length > 0) {
+                const totalRounds = gameState.gameHistory.length;
+                const playerTotalScore = gameState.gameHistory.reduce((sum, round) => sum + round.playerScore, 0);
+                const aiTotalScore = gameState.gameHistory.reduce((sum, round) => sum + round.aiScore, 0);
+                const playerAvgScore = totalRounds > 0 ? Math.round(playerTotalScore / totalRounds) : 0;
+                const aiAvgScore = totalRounds > 0 ? Math.round(aiTotalScore / totalRounds) : 0;
+                const playerMaxScore = totalRounds > 0 ? Math.max(...gameState.gameHistory.map(round => round.playerScore)) : 0;
+                const aiMaxScore = totalRounds > 0 ? Math.max(...gameState.gameHistory.map(round => round.aiScore)) : 0;
+                
+                historyManager.setCurrentGameHistory({
+                    playerScore: gameState.playerScore,
+                    aiScore: gameState.aiScore,
+                    winner: gameState.gameActive ? 'playing' : 'none',
+                    winnerText: gameState.gameActive ? '游戏中' : '未完成',
+                    totalRounds: totalRounds,
+                    playerAvgScore: playerAvgScore,
+                    aiAvgScore: aiAvgScore,
+                    playerMaxScore: playerMaxScore,
+                    aiMaxScore: aiMaxScore,
+                    playerFullClear: gameState.playerFullClearCount,
+                    aiFullClear: gameState.aiFullClearCount,
+                    rounds: [...gameState.gameHistory]
+                });
+            }
+            
+            // 重置到第一个历史记录
+            historyManager.resetToFirst();
+            
+            // 更新历史记录导航
+            updateHistoryNav();
+            
+            // 更新表格显示
+            const currentHistory = historyManager.getCurrentHistory();
+            updateHistoryTable(currentHistory);
+            
+            // 显示弹窗
+            elements.historyOverlay.style.display = 'flex';
+        }
+        
+        // 导航到上一个历史记录
+        function navigateToPrevHistory() {
+            const history = historyManager.getPrevHistory();
+            updateHistoryTable(history);
+            updateHistoryNav();
+            playSound('buttonClick');
+        }
+        
+        // 导航到下一个历史记录
+        function navigateToNextHistory() {
+            const history = historyManager.getNextHistory();
+            updateHistoryTable(history);
+            updateHistoryNav();
+            playSound('buttonClick');
         }
         
         // 更新游戏结束界面统计信息
@@ -2605,12 +3044,45 @@
                 elements.winnerMessage.className = 'winner-message tie-winner';
                 setTimeout(() => playSound('score'), 500);
             }
+            
+            // 保存当前游戏历史记录到存储列表
+            const totalRounds = gameState.gameHistory.length;
+            const playerTotalScore = totalRounds > 0 ? 
+                gameState.gameHistory.reduce((sum, round) => sum + round.playerScore, 0) : 0;
+            const aiTotalScore = totalRounds > 0 ? 
+                gameState.gameHistory.reduce((sum, round) => sum + round.aiScore, 0) : 0;
+            const playerAvgScore = totalRounds > 0 ? Math.round(playerTotalScore / totalRounds) : 0;
+            const aiAvgScore = totalRounds > 0 ? Math.round(aiTotalScore / totalRounds) : 0;
+            const playerMaxScore = totalRounds > 0 ? 
+                Math.max(...gameState.gameHistory.map(round => round.playerScore)) : 0;
+            const aiMaxScore = totalRounds > 0 ? 
+                Math.max(...gameState.gameHistory.map(round => round.aiScore)) : 0;
+            
+            // 保存到历史记录管理器
+            historyManager.addHistory({
+                playerScore: gameState.playerScore,
+                aiScore: gameState.aiScore,
+                winner: winner,
+                winnerText: winnerText,
+                totalRounds: totalRounds,
+                playerAvgScore: playerAvgScore,
+                aiAvgScore: aiAvgScore,
+                playerMaxScore: playerMaxScore,
+                aiMaxScore: aiMaxScore,
+                playerFullClear: gameState.playerFullClearCount,
+                aiFullClear: gameState.aiFullClearCount,
+                rounds: [...gameState.gameHistory]
+            });
         }
         
         // 事件监听
         elements.confirmContinueBtn.addEventListener('click', confirmAndContinue);
         elements.confirmEndBtn.addEventListener('click', confirmAndEnd);
         elements.restartBtn.addEventListener('click', initGame);
+        
+        // 历史记录导航按钮事件监听
+        elements.historyLeftBtn.addEventListener('click', navigateToPrevHistory);
+        elements.historyRightBtn.addEventListener('click', navigateToNextHistory);
         
         // 移除了通用按钮音效监听器，因为confirmAndContinue和confirmAndEnd函数已经包含了声音播放
         
