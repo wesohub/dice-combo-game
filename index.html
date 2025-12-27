@@ -312,10 +312,11 @@
         .warning { color: #ff6b6b; font-weight: bold; }
         .important { color: #4ecdc4; font-weight: bold; }
         
-        /* 历史记录弹窗样式更新 */
+        /* ===== 完全重新设计历史记录弹窗样式 ===== */
+        /* 历史记录弹窗宽度与规则弹窗一致 */
         .history-modal-content {
-            max-width: 95%;
-            width: 95%;
+            max-width: 600px; /* 与规则弹窗一致 */
+            width: 100%;
             max-height: 90vh;
         }
         
@@ -374,7 +375,7 @@
         
         .history-table-container {
             margin-top: 15px;
-            overflow: hidden;
+            overflow: auto;
             border-radius: 8px;
             border: 1px solid #3a3a4e;
             max-height: calc(90vh - 180px);
@@ -382,10 +383,10 @@
             flex-direction: column;
         }
         
+        /* 重新设计历史记录表格 */
         .history-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
             font-size: 0.85rem;
             table-layout: fixed;
         }
@@ -396,10 +397,11 @@
             z-index: 10;
         }
         
+        /* 表头列宽分配：回合和选手靠左，缩小宽度；组合详情占据大部分宽度；得分和累计分数靠右，缩小宽度 */
         .history-table th {
             background: rgba(60, 60, 80, 0.95);
             color: #ffd166;
-            padding: 12px 8px;
+            padding: 12px 6px;
             text-align: center;
             font-size: 0.9rem;
             border-bottom: 2px solid rgba(255, 209, 102, 0.3);
@@ -407,41 +409,99 @@
             top: 0;
         }
         
-        .history-table tbody {
-            overflow-y: auto;
-            display: block;
-            max-height: calc(90vh - 250px);
+        /* 新的表头布局 - 5列 */
+        .history-table th:nth-child(1) { width: 8%; }   /* 回合 */
+        .history-table th:nth-child(2) { width: 10%; }  /* 选手 */
+        .history-table th:nth-child(3) { width: 50%; }  /* 组合详情 - 占据大部分宽度 */
+        .history-table th:nth-child(4) { width: 12%; }  /* 得分 */
+        .history-table th:nth-child(5) { width: 12%; }  /* 累计 */
+        
+        /* 表格主体样式 */
+        .history-table tbody tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .history-table tr {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
+        .history-table tbody tr:last-child {
+            border-bottom: none;
         }
         
         .history-table td {
-            padding: 10px 8px;
+            padding: 10px 6px;
+            vertical-align: middle;
             text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+        
+        /* 回合单元格 - 合并两行显示 */
+        .player-row .round-number-cell {
+            text-align: center;
+            font-weight: bold;
+            color: #ffd166;
+            vertical-align: middle;
+        }
+        
+        /* 玩家行样式 */
+        .player-row td {
             background: rgba(40, 40, 60, 0.8);
+            color: #4ecdc4;
         }
         
-        .history-table tr:last-child td { border-bottom: none; }
-        .history-table tr:hover td { background: rgba(255, 255, 255, 0.05); }
-        
-        .player-round { color: #4ecdc4; font-weight: bold; }
-        .ai-round { color: #ff6b6b; font-weight: bold; }
-        
-        .round-combination { 
-            max-width: 200px; 
-            word-break: break-word; 
-            font-size: 0.8rem; 
-            line-height: 1.4; 
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .player-row td:nth-child(2) { /* 选手列 */
+            text-align: center;
+            font-weight: bold;
         }
         
-        .penalty-text { color: #ff6b6b; font-weight: bold; }
+        .player-row td:nth-child(3) { /* 组合详情列 */
+            text-align: center;
+            font-weight: bold;
+            word-break: break-word;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        .player-row td:nth-child(4),
+        .player-row td:nth-child(5) { /* 得分和累计列 */
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* AI行样式 */
+        .ai-row td {
+            background: rgba(40, 40, 60, 0.8);
+            color: #ff6b6b;
+        }
+        
+
+        
+        .ai-row td:nth-child(1) { /* 选手列 */
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .ai-row td:nth-child(2) { /* 组合详情列 */
+            text-align: center;
+            font-weight: bold;
+            word-break: break-word;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        .ai-row td:nth-child(3),
+        .ai-row td:nth-child(4) { /* 得分和累计列 */
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* 悬停效果 */
+        .history-table tbody tr:hover td {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* 惩罚文本样式 */
+        .penalty-text {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
         
         .penalty-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%); color: white; padding: 16px; border-radius: 10px; z-index: 200; text-align: center; box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5); display: none; animation: popIn 0.5s ease-out; }
         
@@ -715,7 +775,6 @@
             .overlay-close-hint { font-size: 0.8rem; bottom: 20px; }
             .history-table { font-size: 0.75rem; }
             .history-table th, .history-table td { padding: 8px 4px; }
-            .round-combination { max-width: 120px; }
             .game-over-buttons { flex-direction: column; align-items: center; }
             #restart-btn, #game-over-history-btn { min-width: 180px; width: 100%; max-width: 250px; }
             .rules-section-title { font-size: 1rem; }
@@ -732,8 +791,8 @@
             
             /* 历史记录弹窗响应式 */
             .history-modal-content {
-                max-width: 98%;
-                width: 98%;
+                max-width: 95%;
+                width: 95%;
                 max-height: 85vh;
             }
             
@@ -759,6 +818,13 @@
             .history-nav {
                 gap: 10px;
             }
+            
+            /* 移动端表格列宽调整 */
+            .history-table th:nth-child(1) { width: 10%; }  /* 回合 */
+            .history-table th:nth-child(2) { width: 12%; } /* 选手 */
+            .history-table th:nth-child(3) { width: 48%; } /* 组合详情 */
+            .history-table th:nth-child(4) { width: 12%; } /* 得分 */
+            .history-table th:nth-child(5) { width: 12%; } /* 累计 */
         }
         
         @media (max-width: 480px) {
@@ -773,7 +839,6 @@
             .round-score-left { font-size: 0.85rem; padding: 2px 4px; }
             .history-table { font-size: 0.7rem; }
             .history-table th, .history-table td { padding: 6px 3px; }
-            .round-combination { max-width: 100px; }
             .overlay-close-hint { font-size: 0.75rem; bottom: 15px; }
             .players-info { gap: 6px; }
             .player-card { padding: 6px; }
@@ -989,15 +1054,11 @@
                 <table class="history-table" id="history-table">
                     <thead>
                         <tr>
-                            <th style="width: 8%">回合</th>
-                            <th style="width: 8%">玩家</th>
-                            <th style="width: 24%">组合详情</th>
-                            <th style="width: 8%">得分</th>
-                            <th style="width: 8%">累计</th>
-                            <th style="width: 8%">AI</th>
-                            <th style="width: 24%">组合详情</th>
-                            <th style="width: 8%">得分</th>
-                            <th style="width: 8%">累计</th>
+                            <th>回合</th>
+                            <th>选手</th>
+                            <th>组合详情</th>
+                            <th>得分</th>
+                            <th>累计</th>
                         </tr>
                     </thead>
                     <tbody id="history-body"></tbody>
@@ -2874,7 +2935,7 @@
             }
         }
         
-        // 更新历史记录表格
+        // ============ 完全重新设计的历史记录表格显示函数 ============
         function updateHistoryTable(historyData) {
             elements.historyBody.innerHTML = '';
             
@@ -2882,7 +2943,7 @@
                 // 如果没有历史记录，显示空状态
                 const emptyRow = document.createElement('tr');
                 const emptyCell = document.createElement('td');
-                emptyCell.colSpan = 9;
+                emptyCell.colSpan = 5;
                 emptyCell.textContent = '暂无历史记录数据';
                 emptyCell.style.textAlign = 'center';
                 emptyCell.style.padding = '20px';
@@ -2892,27 +2953,78 @@
                 return;
             }
             
-            historyData.rounds.forEach(round => {
-                const row = document.createElement('tr');
+            // 按回合显示，每个回合显示两行：第一行玩家，第二行AI
+            historyData.rounds.forEach((round, index) => {
+                // 玩家行
+                const playerRow = document.createElement('tr');
+                playerRow.className = 'player-row';
                 
-                const createCell = (text, className) => {
-                    const cell = document.createElement('td');
-                    cell.textContent = text;
-                    if (className) cell.className = className;
-                    return cell;
-                };
+                // 回合单元格（合并两行）
+                const roundCell = document.createElement('td');
+                roundCell.className = 'round-number-cell';
+                roundCell.rowSpan = 2;
+                roundCell.textContent = round.round;
+                playerRow.appendChild(roundCell);
                 
-                row.appendChild(createCell(round.round));
-                row.appendChild(createCell('玩家', 'player-round'));
-                row.appendChild(createCell(round.playerPenalty ? '惩罚归零' : round.playerCombination, 'round-combination player-round'));
-                row.appendChild(createCell(round.playerPenalty ? 0 : round.playerScore, 'player-round'));
-                row.appendChild(createCell(round.playerCumulativeScore, 'player-round'));
-                row.appendChild(createCell('AI', 'ai-round'));
-                row.appendChild(createCell(round.aiPenalty ? '惩罚归零' : round.aiCombination, 'round-combination ai-round'));
-                row.appendChild(createCell(round.aiPenalty ? 0 : round.aiScore, 'ai-round'));
-                row.appendChild(createCell(round.aiCumulativeScore, 'ai-round'));
+                // 玩家单元格
+                const playerNameCell = document.createElement('td');
+                playerNameCell.textContent = '玩家';
+                playerRow.appendChild(playerNameCell);
                 
-                elements.historyBody.appendChild(row);
+                // 组合详情
+                const playerComboCell = document.createElement('td');
+                playerComboCell.textContent = round.playerPenalty ? '惩罚归零' : round.playerCombination;
+                playerRow.appendChild(playerComboCell);
+                
+                // 得分
+                const playerScoreCell = document.createElement('td');
+                playerScoreCell.textContent = round.playerPenalty ? 0 : round.playerScore;
+                playerRow.appendChild(playerScoreCell);
+                
+                // 累计分数
+                const playerCumulativeCell = document.createElement('td');
+                playerCumulativeCell.textContent = round.playerCumulativeScore;
+                playerRow.appendChild(playerCumulativeCell);
+                
+                elements.historyBody.appendChild(playerRow);
+                
+                // AI行
+                const aiRow = document.createElement('tr');
+                aiRow.className = 'ai-row';
+                
+                // AI名称（回合单元格已被玩家行通过rowSpan=2合并，所以AI行不需要回合单元格）
+                const aiNameCell = document.createElement('td');
+                aiNameCell.textContent = 'AI';
+                aiRow.appendChild(aiNameCell);
+                
+                // 组合详情
+                const aiComboCell = document.createElement('td');
+                aiComboCell.textContent = round.aiPenalty ? '惩罚归零' : round.aiCombination;
+                aiRow.appendChild(aiComboCell);
+                
+                // 得分
+                const aiScoreCell = document.createElement('td');
+                aiScoreCell.textContent = round.aiPenalty ? 0 : round.aiScore;
+                aiRow.appendChild(aiScoreCell);
+                
+                // 累计分数
+                const aiCumulativeCell = document.createElement('td');
+                aiCumulativeCell.textContent = round.aiCumulativeScore;
+                aiRow.appendChild(aiCumulativeCell);
+                
+                elements.historyBody.appendChild(aiRow);
+                
+                // 在回合之间添加分隔行（可选，添加更明显的视觉分隔）
+                if (index < historyData.rounds.length - 1) {
+                    const spacerRow = document.createElement('tr');
+                    const spacerCell = document.createElement('td');
+                    spacerCell.colSpan = 5;
+                    spacerCell.style.height = '8px';
+                    spacerCell.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    spacerCell.style.border = 'none';
+                    spacerRow.appendChild(spacerCell);
+                    elements.historyBody.appendChild(spacerRow);
+                }
             });
         }
         
