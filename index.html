@@ -889,7 +889,47 @@
             .history-table th:nth-child(4) { width: 12%; }
             .history-table th:nth-child(5) { width: 12%; }
         }
-                
+        
+        @media (max-width: 480px) {
+            .dice { 
+                font-size: 1.3rem; 
+            }
+            
+            .dice-question { font-size: 1.3rem; }
+            .dot { width: 6px; height: 6px; }
+            .dice-container { gap: 4px; }
+            .game-header { min-height: auto; padding-right: 8px; }
+            .title-section { padding: 10px; }
+            .header-buttons { gap: 6px; }
+            .header-btn { width: 38px; height: 38px; font-size: 0.7rem; }
+            .round-score-left { font-size: 0.85rem; padding: 2px 4px; }
+            .history-table { font-size: 0.7rem; }
+            .history-table th, .history-table td { padding: 6px 3px; }
+            .overlay-close-hint { font-size: 0.75rem; bottom: 15px; }
+            .players-info { gap: 6px; }
+            .player-card { padding: 6px; }
+            .score-table-item { padding: 6px; min-height: 40px; }
+            .score-table-icon { width: 20px; height: 20px; font-size: 0.75rem; }
+            .score-table-name { font-size: 0.75rem; }
+            .score-table-points { font-size: 0.85rem; }
+            .score-table-badge { width: 15px; height: 15px; font-size: 0.6rem; }
+            .winner-message { font-size: 1.3rem; gap: 8px; }
+            .final-score-display { font-size: 1rem; gap: 10px; }
+            .game-credit { font-size: 0.6rem; }
+            
+            /* 历史记录弹窗响应式 */
+            .history-time-display {
+                font-size: 0.8rem;
+                min-width: 120px;
+            }
+            
+            .history-nav-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+        }
+        
         /* PC端骰子更大，点稍微小一点 */
         @media (min-width: 769px) {
             .dice { width: 62px; height: 62px; font-size: 1.9rem; }
