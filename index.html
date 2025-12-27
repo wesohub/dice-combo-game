@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dice Combo</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -295,16 +296,19 @@
         .rules-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         
         .rules-section-title { font-size: 1.1rem; color: #ffd166; margin-bottom: 12px; padding-left: 8px; border-left: 4px solid #a18cd1; display: flex; align-items: center; gap: 8px; }
+        .rules-section-title i { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: rgba(161, 140, 209, 0.2); border: 1px solid rgba(161, 140, 209, 0.4); border-radius: 4px; }
         
-        .rules-list { padding-left: 20px; margin-bottom: 10px; }
+        .rules-list { padding-left: 20px; margin-bottom: 10px; font-size: 0.9rem; }
         .rules-list li { margin-bottom: 8px; position: relative; }
         .rules-list li::before { content: "•"; color: #4ecdc4; font-weight: bold; position: absolute; left: -15px; }
         
         .rules-highlight { background: rgba(255, 209, 102, 0.15); padding: 12px; border-radius: 8px; border-left: 4px solid #ffd166; margin: 12px 0; }
         .rules-highlight-title { color: #ffd166; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .rules-highlight-title i { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; background: rgba(255, 209, 102, 0.2); border: 1px solid rgba(255, 209, 102, 0.4); border-radius: 4px; }
         
         .rules-warning { background: rgba(255, 107, 107, 0.15); padding: 12px; border-radius: 8px; border-left: 4px solid #ff6b6b; margin: 12px 0; }
         .rules-warning-title { color: #ff6b6b; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .rules-warning-title i { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; background: rgba(255, 107, 107, 0.2); border: 1px solid rgba(255, 107, 107, 0.4); border-radius: 4px; }
         
         .rules-example { background: rgba(78, 205, 196, 0.1); padding: 10px; border-radius: 6px; margin: 8px 0; font-style: italic; border-left: 3px solid #4ecdc4; }
         
@@ -971,24 +975,18 @@
                 <div class="rules-section">
                     <h3 class="rules-section-title"><i class="fas fa-gamepad"></i> 核心操作</h3>
                     <ul class="rules-list">
-                        <li>每回合自动投掷<span class="important">7个骰子</span>，<span class="important">必须按点数从小到大的顺序</span>点击骰子进行选择</li>
-                        <li>再次点击已选骰子，可取消选择</li>
+                        <li>每回合自动投掷骰子，需按点数从小到大点击选骰</li>
+                        <li>再次点击已选骰子可取消选择</li>
                     </ul>
                 </div>
                 
                 <div class="rules-section">
-                    <h3 class="rules-section-title"><i class="fas fa-calculator"></i> 分组与计分</h3>
+                    <h3 class="rules-section-title"><i class="fas fa-calculator"></i> 分组计分</h3>
                     <ul class="rules-list">
-                        <li><span class="highlight">系统自动分组：</span></li>
-                        <li><span class="important">至少3个</span>连续选择的 <span class="important">"连续点数"</span> = 连续数</li>
-                        <li><span class="important">至少2个</span>连续选择的 <span class="important">"相同点数"</span> = 叠数</li>
-                        <li><span class="important">优先级：</span>先点击的点数优先成组</li>
+                        <li>3 个及以上连续点数为连续数</li>
+                        <li>2 个及以上相同点数为叠数</li>
+                        <li>按组合类型与大小计分（详见计分表），多个组合可以同时计分</li>
                     </ul>
-                    <div class="rules-highlight">
-                        <div class="rules-highlight-title"><i class="fas fa-bullseye"></i> 计分规则</div>
-                        <div>查看下方计分表了解详细计分规则</div>
-                        <div class="rules-example">例：选 2叠(10分) + 3连(20分) = 30分</div>
-                    </div>
                 </div>
                 
                 <div class="rules-section">
@@ -1002,29 +1000,19 @@
                 <div class="rules-section">
                     <h3 class="rules-section-title"><i class="fas fa-star"></i> 特殊规则</h3>
                     <ul class="rules-list">
-                        <li><span class="warning">剩余 1 个骰子时</span>，只能点击『计分并结束回合』，不能继续投掷</li>
-                        <li>若 7 个骰子全部计分，可用『计分并再次投掷』投掷 7 个新骰子<span class="highlight">（运气奖励）</span>，可循环使用</li>
+                        <li><span class="warning">剩余 1 个骰子无法成组</span>，需点击『计分并结束回合』</li>
+                        <li>点击『计分并再次投掷』后，若重新投掷的骰子无有效组合 → <span class="warning">本回合分数作废</span></li>
+                        <li>若场上骰子均被组成有效组合，可点击『计分并再次投掷』计分并投掷一轮新骰子，可循环使用</li>
                     </ul>
                 </div>
                 
                 <div class="rules-section">
-                    <h3 class="rules-section-title"><i class="fas fa-exclamation-triangle"></i> 惩罚机制</h3>
-                    <div class="rules-warning">
-                        <div class="rules-warning-title"><i class="fas fa-skull-crossbones"></i> 警告！</div>
-                        <ul class="rules-list">
-                            <li>选 "继续投掷" 后，剩余骰子无可用组合 → <span class="warning">本回合分数作废</span>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="rules-section">
-                    <h3 class="rules-section-title"><i class="fas fa-flag-checkered"></i> 游戏胜利条件</h3>
+                    <h3 class="rules-section-title"><i class="fas fa-flag-checkered"></i> 胜利条件</h3>
                     <div class="rules-highlight">
-                        <div class="rules-highlight-title"><i class="fas fa-trophy"></i> 胜负判定</div>
                         <ul class="rules-list">
-                            <li>玩家与AI轮流进行回合，构成一个完整回合</li>
-                            <li>当一个完整回合结束时，若<span class="important">任何一方的累计分数达到或超过700分</span>，则游戏结束</li>
-                            <li><span class="important">分数高者获胜</span>，若分数相同，则为<span class="important">平局</span></li>
+                            <li>双方玩家交替进行计分组成一个完整回合</li>
+                            <li>后手玩家达到目标分数直接获胜，先手玩家达到目标分需等待后手玩家完成本回合</li>
+                            <li>双方均超过目标则分数更高者胜、同分为平局</li>
                         </ul>
                     </div>
                 </div>
