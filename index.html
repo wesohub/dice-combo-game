@@ -109,7 +109,7 @@
             display: flex; 
             justify-content: center; 
             align-items: center;
-            gap: 10px; 
+            gap: 8px; 
             flex-wrap: wrap; 
             margin-bottom: 0; 
             margin-top: 0;
@@ -117,28 +117,7 @@
             min-height: 90px; /* 确保有足够高度 */
         }
         
-        /* 移动端骰子动态放大 - 占满宽度 */
-        @media (max-width: 768px) {
-            .dice-container {
-                justify-content: space-between;
-                width: 100%;
-            }
-            
-            /* 确保7个骰子等比例放大到回合指示宽度 */
-            .dice-wrapper {
-                flex: 1;
-                min-width: auto;
-                max-width: auto;
-                display: flex;
-                justify-content: center;
-            }
-            
-            .dice {
-                width: 100% !important;
-                height: auto !important;
-                aspect-ratio: 1 / 1; /* 保持正方形 */
-            }
-        }
+
         
         .dice-wrapper { 
             display: flex; 
@@ -148,21 +127,21 @@
             flex-shrink: 0;
         }
         
-        .dice { 
-            width: 58px; 
-            height: 58px; 
-            background: #fff; 
-            border-radius: 10px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.7rem; 
-            color: #222; 
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            position: relative; 
-            user-select: none; 
+        .dice {
+            width: 65px;
+            height: 65px;
+            background: #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #222;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            user-select: none;
         }
         
         .dice:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); }
@@ -195,45 +174,49 @@
             color: #666 !important;
         }
         
-        .dice-points { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); width: 100%; height: 100%; padding: 5px; }
-        
-        /* PC端骰子点稍微小一点，但比最初的大 */
-        .dot { 
-            width: 9px; 
-            height: 9px; 
-            background-color: #222; 
-            border-radius: 50%; 
-            justify-self: center; 
-            align-self: center; 
+        /* 重置骰子点容器样式 */
+        .dice-points { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            padding: 0; 
+            margin: 0;
         }
         
-        .dice.selected .dot, .dice.ai-selected .dot { background-color: white; }
-        .dice.used .dot { background-color: #777; }
-        .dice.locked .dot { background-color: #aaa; }
+        /* 重置骰子点样式 */
+        .dice-points .dot { 
+            position: absolute !important;
+            display: block !important;
+            transform: translate(-50%, -50%) !important;
+        }
         
-        .dice-1 .dot:nth-child(1) { grid-column: 2; grid-row: 2; }
-        .dice-2 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
-        .dice-2 .dot:nth-child(2) { grid-column: 3; grid-row: 3; }
-        .dice-3 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
-        .dice-3 .dot:nth-child(2) { grid-column: 2; grid-row: 2; }
-        .dice-3 .dot:nth-child(3) { grid-column: 3; grid-row: 3; }
-        .dice-4 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
-        .dice-4 .dot:nth-child(2) { grid-column: 3; grid-row: 1; }
-        .dice-4 .dot:nth-child(3) { grid-column: 1; grid-row: 3; }
-        .dice-4 .dot:nth-child(4) { grid-column: 3; grid-row: 3; }
-        .dice-5 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
-        .dice-5 .dot:nth-child(2) { grid-column: 3; grid-row: 1; }
-        .dice-5 .dot:nth-child(3) { grid-column: 2; grid-row: 2; }
-        .dice-5 .dot:nth-child(4) { grid-column: 1; grid-row: 3; }
-        .dice-5 .dot:nth-child(5) { grid-column: 3; grid-row: 3; }
-        .dice-6 .dot:nth-child(1) { grid-column: 1; grid-row: 1; }
-        .dice-6 .dot:nth-child(2) { grid-column: 1; grid-row: 2; }
-        .dice-6 .dot:nth-child(3) { grid-column: 1; grid-row: 3; }
-        .dice-6 .dot:nth-child(4) { grid-column: 3; grid-row: 1; }
-        .dice-6 .dot:nth-child(5) { grid-column: 3; grid-row: 2; }
-        .dice-6 .dot:nth-child(6) { grid-column: 3; grid-row: 3; }
+        /* 骰子状态样式 */
+        .dice.selected .dice-points .dot, 
+        .dice.ai-selected .dice-points .dot { 
+            background-color: white !important; 
+        }
         
-        .dice-question { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 1.7rem; font-weight: bold; color: #666; }
+        .dice.used .dice-points .dot { 
+            background-color: #777 !important; 
+        }
+        
+        .dice.locked .dice-points .dot { 
+            background-color: #aaa !important; 
+        }
+        
+        /* 移除所有基于grid的骰子点位置样式 */
+        
+        .dice-question { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 100%; 
+            height: 100%; 
+            font-size: 1.7rem; 
+            font-weight: bold; 
+            color: #666; 
+            position: relative; 
+        }
         
         @keyframes shake {
             0% { transform: translate(0, 0) rotate(0deg); }
@@ -682,7 +665,7 @@
             gap: 6px;
         }
         
-        /* PC端：3行4列 */
+        /* 统一计分表网格布局 - 默认3行4列 */
         .score-table-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -690,12 +673,19 @@
             gap: 8px;
         }
         
-        /* 移动端：4行3列 */
-        @media (max-width: 768px) {
+        /* 移动设备使用4行3列布局 */
+        @media (max-width: 599px) {
             .score-table-grid {
                 grid-template-columns: repeat(3, 1fr);
                 grid-template-rows: repeat(4, auto);
-                gap: 6px;
+            }
+        }
+        
+        /* 平板设备强制使用3行4列布局 */
+        @media (min-width: 600px) {
+            .score-table-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                grid-template-rows: repeat(3, auto) !important;
             }
         }
         
@@ -796,40 +786,41 @@
         }
         
         /* 响应式设计优化 */
-        @media (max-width: 768px) {
+        /* 平板设备 (600px及以上) - 使用与PC端完全相同的布局 */
+        @media (min-width: 600px) {
+            /* 平板端保持与PC端相同的布局，不做特殊调整 */
+        }
+        
+        /* 移动设备 (小于600px) */
+        @media (max-width: 599px) {
             .container { padding: 10px; }
             .game-title { font-size: 1.4rem; }
             .game-subtitle { font-size: 0.8rem; }
             .players-info { flex-direction: row; }
             .player-card { width: 100%; }
             
-            /* 移动端骰子动态等比放大 */
-            .dice { 
-                font-size: 1.4rem; 
+            /* 瘦长屏幕 (如手机) - 宽高比小于1且宽度较小 */
+            @media (max-aspect-ratio: 1/1) {
+                /* 设置手机端骰子尺寸 */
+                .dice {
+                    width: 45px;
+                    height: 45px;
+                    font-size: 1.4rem;
+                }
+                
+                .dice-container {
+                    gap: 7px;
+                    max-width: 253px; /* 5个骰子 * (45px + 7px) - 7px = 5*52 -7 = 253px */
+                    margin: 0 auto; /* 确保容器本身在父元素中居中显示 */
+                }
             }
             
-            .dice-question { font-size: 1.4rem; }
-            .dice-points { padding: 4px; }
-            
-            /* 移动端骰子点的大小 */
-            .dice .dot,
-            .dice-points .dot { 
-                width: 7px !important; 
-                height: 7px !important; 
-            }
-            
-            .dice-container { 
-                gap: 3px; 
-                padding: 3px 0;
-                min-height: 70px;
-                justify-content: space-between;
-            }
-
             .controls {
-                gap: 6px;  /* 移动端稍微小一点，因为屏幕较小 */
+                gap: 6px;
             }
             
             .control-btn { font-size: 0.8rem; padding: 8px 6px; }
+            
             .header-btn { width: 40px; height: 40px; font-size: 0.75rem; }
             .game-over-content { padding: 15px; max-height: 60vh; }
             .game-over h2 { font-size: 1.5rem; }
@@ -891,17 +882,23 @@
         }
         
         @media (max-width: 480px) {
-            .dice { 
-                font-size: 1.3rem; 
-            }
-            
-            .dice-question { font-size: 1.3rem; }
-            .dot { width: 6px; height: 6px; }
-            .dice-container { gap: 4px; }
-            .game-header { min-height: auto; padding-right: 8px; }
-            .title-section { padding: 10px; }
-            .header-buttons { gap: 6px; }
-            .header-btn { width: 38px; height: 38px; font-size: 0.7rem; }
+        .game-header { min-height: auto; padding-right: 8px; }
+    .title-section { padding: 10px; }
+    .header-buttons { gap: 6px; }
+    .header-btn { width: 38px; height: 38px; font-size: 0.7rem; }
+    
+    /* 小屏手机 - 使用统一的手机骰子大小 */
+    .dice {
+        width: 45px;
+        height: 45px;
+        font-size: 1.4rem;
+    }
+    
+    .dice-container {
+        gap: 6px;
+        max-width: 249px; /* 5个骰子 * (45px + 6px) - 6px = 5*51 -6 = 249px */
+        margin: 0 auto; /* 确保容器本身在父元素中居中显示 */
+    }
             .round-score-left { font-size: 0.85rem; padding: 2px 4px; }
             .history-table { font-size: 0.7rem; }
             .history-table th, .history-table td { padding: 6px 3px; }
@@ -930,13 +927,7 @@
             }
         }
         
-        /* PC端骰子更大，点稍微小一点 */
-        @media (min-width: 769px) {
-            .dice { width: 62px; height: 62px; font-size: 1.9rem; }
-            .dice-question { font-size: 1.9rem; }
-            .dice-points { padding: 7px; }
-            .dot { width: 10px; height: 10px; }
-        }
+        /* 统一骰子样式 - 所有设备通用 */
         
         .log-content::-webkit-scrollbar, .modal-content::-webkit-scrollbar { width: 6px; }
         .log-content::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { background: rgba(60, 60, 80, 0.5); border-radius: 3px; }
@@ -1646,11 +1637,31 @@
             if (value === '?') return '<div class="dice-question">?</div>';
             
             const numValue = parseInt(value);
-            let dotsHtml = '';
-            for (let i = 0; i < numValue; i++) dotsHtml += '<div class="dot"></div>';
-            for (let i = numValue; i < 6; i++) dotsHtml += '<div class="dot" style="opacity: 0;"></div>';
             
-            return `<div class="dice-points dice-${numValue}">${dotsHtml}</div>`;
+            // 使用直观的百分比位置，确保骰子点在骰子容器中正确居中
+            const dotSize = 16.7; // 骰子点大小是骰子宽度的1/6
+            
+            // 定义不同点数的骰子点位置（中心位置的百分比）
+            const dotPositions = {
+                1: [{left: '50%', top: '50%'}],  // 中心
+                2: [{left: '25%', top: '25%'}, {left: '75%', top: '75%'}],  // 对角
+                3: [{left: '25%', top: '25%'}, {left: '50%', top: '50%'}, {left: '75%', top: '75%'}],  // 对角+中心
+                4: [{left: '25%', top: '25%'}, {left: '25%', top: '75%'}, {left: '75%', top: '25%'}, {left: '75%', top: '75%'}],  // 四个角
+                5: [{left: '25%', top: '25%'}, {left: '25%', top: '75%'}, {left: '50%', top: '50%'}, {left: '75%', top: '25%'}, {left: '75%', top: '75%'}],  // 四个角+中心
+                6: [{left: '25%', top: '20%'}, {left: '25%', top: '50%'}, {left: '25%', top: '80%'}, {left: '75%', top: '20%'}, {left: '75%', top: '50%'}, {left: '75%', top: '80%'}]  // 两列各三个点
+            };
+            
+            // 创建骰子点HTML
+            let dotsHtml = '';
+            const positions = dotPositions[numValue];
+            
+            // 创建可见的骰子点
+            positions.forEach(pos => {
+                dotsHtml += `<div class="dot" style="width: ${dotSize}%; height: ${dotSize}%; background-color: #222; border-radius: 50%; position: absolute; left: ${pos.left}; top: ${pos.top};"></div>`;
+            });
+            
+            // 返回新的骰子点HTML结构
+            return `<div class="dice-points" style="width: 100%; height: 100%; position: relative; padding: 0; margin: 0;">${dotsHtml}</div>`;
         }
         
         // 更新回合信息栏样式
