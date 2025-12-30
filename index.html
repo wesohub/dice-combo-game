@@ -6,6 +6,7 @@
     <title>Dice Combo</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         
@@ -365,7 +366,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            justify-content: center;
+            justify-content: flex-start;
             flex: 1;
         }
         
@@ -391,6 +392,34 @@
         }
         
         .history-nav-btn:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .history-save-btn {
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            color: #222;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1rem;
+        }
+        
+        .history-save-btn:hover {
+            background: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%);
+            transform: scale(1.05);
+        }
+        
+        .history-save-btn:disabled {
             background: #555;
             color: #888;
             cursor: not-allowed;
@@ -441,11 +470,16 @@
             top: 0;
         }
         
-        .history-table th:nth-child(1) { width: 8%; }
-        .history-table th:nth-child(2) { width: 10%; }
-        .history-table th:nth-child(3) { width: 50%; }
-        .history-table th:nth-child(4) { width: 12%; }
-        .history-table th:nth-child(5) { width: 12%; }
+        .history-table th:nth-child(1),
+        .history-table td:nth-child(1) { width: 8%; }
+        .history-table th:nth-child(2),
+        .history-table td:nth-child(2) { width: 10%; }
+        .history-table th:nth-child(3),
+        .history-table td:nth-child(3) { width: 50%; }
+        .history-table th:nth-child(4),
+        .history-table td:nth-child(4) { width: 12%; }
+        .history-table th:nth-child(5),
+        .history-table td:nth-child(5) { width: 12%; }
         
         /* 表格主体样式 */
         .history-table tbody tr {
@@ -869,16 +903,26 @@
                 font-size: 0.9rem;
             }
             
+            .history-save-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
             .history-nav {
                 gap: 10px;
             }
             
             /* 移动端表格列宽调整 */
-            .history-table th:nth-child(1) { width: 10%; }
-            .history-table th:nth-child(2) { width: 12%; }
-            .history-table th:nth-child(3) { width: 48%; }
-            .history-table th:nth-child(4) { width: 12%; }
-            .history-table th:nth-child(5) { width: 12%; }
+            .history-table th:nth-child(1),
+            .history-table td:nth-child(1) { width: 10%; }
+            .history-table th:nth-child(2),
+            .history-table td:nth-child(2) { width: 12%; }
+            .history-table th:nth-child(3),
+            .history-table td:nth-child(3) { width: 48%; }
+            .history-table th:nth-child(4),
+            .history-table td:nth-child(4) { width: 12%; }
+            .history-table th:nth-child(5),
+            .history-table td:nth-child(5) { width: 12%; }
         }
         
         @media (max-width: 480px) {
@@ -1089,6 +1133,9 @@
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
+                <button class="history-save-btn" id="history-save-btn" title="保存当前记录为图片">
+                    <i class="fas fa-download"></i>
+                </button>
             </div>
             
             <div class="history-table-container">
@@ -1433,7 +1480,8 @@
             // 新增历史记录相关元素
             historyTimeDisplay: document.getElementById('history-time-display'),
             historyLeftBtn: document.getElementById('history-left-btn'),
-            historyRightBtn: document.getElementById('history-right-btn')
+            historyRightBtn: document.getElementById('history-right-btn'),
+            historySaveBtn: document.getElementById('history-save-btn')
         };
         
         // 计分表项状态
@@ -3117,8 +3165,262 @@
             }
         }
         
+        // 更新保存按钮状态
+        function updateHistorySaveBtnStatus(currentHistory) {
+            if (!currentHistory) {
+                elements.historySaveBtn.disabled = true;
+                elements.historySaveBtn.title = '无记录可保存';
+                return;
+            }
+            
+            const isPlaying = currentHistory.winner === 'playing';
+            elements.historySaveBtn.disabled = isPlaying;
+            elements.historySaveBtn.title = isPlaying ? '当前记录未完成，不可保存' : '保存当前记录为图片';
+        }
+        
+        // 保存历史记录为长图
+        function saveHistoryAsImage() {
+            const currentHistory = historyManager.getCurrentHistory();
+            
+            // 检查是否有记录且记录已完成
+            if (!currentHistory) {
+                alert('没有可保存的历史记录');
+                return;
+            }
+            
+            if (currentHistory.winner === 'playing') {
+                alert('当前游戏正在进行中，无法保存');
+                return;
+            }
+            
+            // 获取历史记录弹窗内容元素
+            const modalContent = elements.historyModalContent;
+            const tableContainer = document.querySelector('.history-table-container');
+            const saveBtn = elements.historySaveBtn;
+            const leftBtn = elements.historyLeftBtn;
+            const rightBtn = elements.historyRightBtn;
+            const timeDisplay = elements.historyTimeDisplay;
+            
+            // 获取表格元素
+            const table = tableContainer.querySelector('.history-table');
+            const tableHead = table.querySelector('thead');
+            const tableHeaders = table.querySelectorAll('th');
+            const historyNav = document.querySelector('.history-nav');
+            
+            // 保存所有原始样式
+            const historyNavComputedStyle = window.getComputedStyle(historyNav);
+            const timeDisplayComputedStyle = window.getComputedStyle(timeDisplay);
+            
+            const originalStyles = {
+                modalMaxHeight: modalContent.style.maxHeight,
+                modalOverflow: modalContent.style.overflow,
+                tableMaxHeight: tableContainer.style.maxHeight,
+                tableOverflow: tableContainer.style.overflow,
+                tableHeight: tableContainer.style.height,
+                saveBtnDisplay: saveBtn.style.display,
+                leftBtnDisplay: leftBtn.style.display,
+                rightBtnDisplay: rightBtn.style.display,
+                historyNavJustifyContent: historyNavComputedStyle.justifyContent,
+                historyNavGap: historyNavComputedStyle.gap,
+                timeDisplayTextAlign: timeDisplayComputedStyle.textAlign,
+                timeDisplayFlex: timeDisplayComputedStyle.flex,
+                timeDisplayText: timeDisplay.textContent,
+                // 保存表头的原始定位样式
+                tableHeadPosition: tableHead.style.position,
+                tableHeadTop: tableHead.style.top,
+                tableHeadersPosition: []
+            };
+            
+            // 保存每个表头单元格的原始定位样式
+            tableHeaders.forEach((header, index) => {
+                originalStyles.tableHeadersPosition[index] = {
+                    position: header.style.position,
+                    top: header.style.top
+                };
+            });
+            
+            // 应用临时样式 - 确保能捕获完整内容
+            modalContent.style.maxHeight = 'none';
+            modalContent.style.overflow = 'visible';
+            tableContainer.style.maxHeight = 'none';
+            tableContainer.style.overflow = 'visible';
+            
+            // 隐藏保存按钮和箭头
+            saveBtn.style.display = 'none';
+            leftBtn.style.display = 'none';
+            rightBtn.style.display = 'none';
+            
+            // 修改时间显示：移除(x/x)部分并右顶格
+            const timeText = timeDisplay.textContent;
+            const timeWithoutPosition = timeText.split(' (')[0];
+            timeDisplay.textContent = timeWithoutPosition;
+            timeDisplay.style.textAlign = 'right';
+            timeDisplay.style.flex = '1'; // 让时间显示占据剩余空间
+            
+            // 调整历史导航栏布局
+            historyNav.style.justifyContent = 'space-between';
+            historyNav.style.gap = '0'; // 移除默认间距
+            
+            // 确保表格容器有足够空间显示所有内容
+            if (table) {
+                tableContainer.style.height = table.scrollHeight + 'px';
+            }
+            
+            // 临时移除表头的sticky定位，解决错位问题
+            tableHead.style.position = 'static';
+            tableHead.style.top = 'auto';
+            tableHeaders.forEach(header => {
+                header.style.position = 'static';
+                header.style.top = 'auto';
+            });
+            
+            // 强制浏览器重排，确保元素位置正确
+            document.documentElement.offsetHeight;
+            
+            // 使用html2canvas捕获完整内容
+            html2canvas(modalContent, {
+                scale: 2, // 提高图片清晰度
+                useCORS: true,
+                logging: false,
+                backgroundColor: null, // 保持原有背景
+                allowTaint: true,
+                removeContainer: false,
+                onclone: function(clonedDoc) {
+                    // 在克隆的文档中再次确保所有内容可见
+                    const clonedModal = clonedDoc.querySelector('#history-modal-content');
+                    const clonedTableContainer = clonedModal.querySelector('.history-table-container');
+                    if (clonedModal && clonedTableContainer) {
+                        clonedModal.style.maxHeight = 'none';
+                        clonedModal.style.overflow = 'visible';
+                        clonedTableContainer.style.maxHeight = 'none';
+                        clonedTableContainer.style.overflow = 'visible';
+                        
+                        // 确保表格容器高度足够
+                        const clonedTable = clonedTableContainer.querySelector('.history-table');
+                        if (clonedTable) {
+                            clonedTableContainer.style.height = clonedTable.scrollHeight + 'px';
+                        }
+                        
+                        // 在克隆文档中也移除表头的sticky定位
+                        const clonedTableHead = clonedTable.querySelector('thead');
+                        const clonedTableHeaders = clonedTable.querySelectorAll('th');
+                        if (clonedTableHead) {
+                            clonedTableHead.style.position = 'static';
+                            clonedTableHead.style.top = 'auto';
+                        }
+                        clonedTableHeaders.forEach(header => {
+                            header.style.position = 'static';
+                            header.style.top = 'auto';
+                        });
+                        
+                        // 克隆文档中修改时间显示和添加标题
+                        const clonedHistoryNav = clonedModal.querySelector('.history-nav');
+                        const clonedTimeDisplay = clonedHistoryNav.querySelector('.history-time-display');
+                        if (clonedTimeDisplay) {
+                            // 移除(x/x)部分
+                            const timeText = clonedTimeDisplay.textContent;
+                            const timeWithoutPosition = timeText.split(' (')[0];
+                            clonedTimeDisplay.textContent = timeWithoutPosition;
+                            clonedTimeDisplay.style.textAlign = 'right';
+                            clonedTimeDisplay.style.flex = '1'; // 让时间显示占据剩余空间
+                        }
+                        
+                        // 调整历史导航栏布局
+                        clonedHistoryNav.style.justifyContent = 'space-between';
+                        clonedHistoryNav.style.gap = '0'; // 移除默认间距
+                        
+                        // 在左顶格添加标题（仅在克隆文档中添加）
+                        const clonedTitleElement = clonedDoc.createElement('div');
+                        clonedTitleElement.className = 'screenshot-title';
+                        clonedTitleElement.textContent = 'Dice Combo 🎲';
+                        clonedTitleElement.style.color = 'white';
+                        clonedTitleElement.style.fontWeight = 'bold';
+                        clonedTitleElement.style.fontSize = '1.2rem';
+                        clonedTitleElement.style.marginLeft = '0'; // 移除左边距，真正左顶格
+                        clonedHistoryNav.insertBefore(clonedTitleElement, clonedHistoryNav.firstChild);
+                    }
+                }
+            }).then(canvas => {
+                // 恢复原始样式
+                modalContent.style.maxHeight = originalStyles.modalMaxHeight;
+                modalContent.style.overflow = originalStyles.modalOverflow;
+                tableContainer.style.maxHeight = originalStyles.tableMaxHeight;
+                tableContainer.style.overflow = originalStyles.tableOverflow;
+                tableContainer.style.height = originalStyles.tableHeight;
+                
+                // 恢复按钮显示
+                saveBtn.style.display = originalStyles.saveBtnDisplay;
+                leftBtn.style.display = originalStyles.leftBtnDisplay;
+                rightBtn.style.display = originalStyles.rightBtnDisplay;
+                
+                // 恢复时间显示位置和内容
+                historyNav.style.justifyContent = originalStyles.historyNavJustifyContent;
+                historyNav.style.gap = originalStyles.historyNavGap;
+                timeDisplay.style.textAlign = originalStyles.timeDisplayTextAlign;
+                timeDisplay.style.flex = originalStyles.timeDisplayFlex;
+                timeDisplay.textContent = originalStyles.timeDisplayText;
+                
+                // 恢复表头的原始定位样式
+                tableHead.style.position = originalStyles.tableHeadPosition;
+                tableHead.style.top = originalStyles.tableHeadTop;
+                tableHeaders.forEach((header, index) => {
+                    header.style.position = originalStyles.tableHeadersPosition[index].position;
+                    header.style.top = originalStyles.tableHeadersPosition[index].top;
+                });
+                
+                // 创建下载链接
+                const link = document.createElement('a');
+                
+                // 生成包含时间信息的文件名
+                const timestamp = currentHistory.date.replace(/\//g, '-').replace(/:/g, '-').replace(/\s/g, '_');
+                const filename = `dice_history_${timestamp}.png`;
+                
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png');
+                
+                // 触发下载
+                link.click();
+                
+                // 播放按钮点击音效
+                playSound('buttonClick');
+            }).catch(err => {
+                // 恢复所有原始样式
+                modalContent.style.maxHeight = originalStyles.modalMaxHeight;
+                modalContent.style.overflow = originalStyles.modalOverflow;
+                tableContainer.style.maxHeight = originalStyles.tableMaxHeight;
+                tableContainer.style.overflow = originalStyles.tableOverflow;
+                tableContainer.style.height = originalStyles.tableHeight;
+                saveBtn.style.display = originalStyles.saveBtnDisplay;
+                leftBtn.style.display = originalStyles.leftBtnDisplay;
+                rightBtn.style.display = originalStyles.rightBtnDisplay;
+                historyNav.style.justifyContent = originalStyles.historyNavJustifyContent;
+                historyNav.style.gap = originalStyles.historyNavGap;
+                timeDisplay.style.textAlign = originalStyles.timeDisplayTextAlign;
+                timeDisplay.style.flex = originalStyles.timeDisplayFlex;
+                timeDisplay.textContent = originalStyles.timeDisplayText;
+                
+                // 恢复表头的原始定位样式
+                tableHead.style.position = originalStyles.tableHeadPosition;
+                tableHead.style.top = originalStyles.tableHeadTop;
+                tableHeaders.forEach((header, index) => {
+                    header.style.position = originalStyles.tableHeadersPosition[index].position;
+                    header.style.top = originalStyles.tableHeadersPosition[index].top;
+                });
+                
+                console.error('保存图片失败:', err);
+                alert('保存图片失败，请重试');
+            });
+        }
+        
         // 打开历史记录弹窗
         function openHistoryModal() {
+            // 清理所有可能存在的标题元素
+            const historyNav = document.querySelector('.history-nav');
+            const existingTitles = historyNav.querySelectorAll('.screenshot-title');
+            existingTitles.forEach(title => {
+                historyNav.removeChild(title);
+            });
+            
             // 如果游戏正在进行中，设置当前游戏历史记录
             if (gameState.gameActive && gameState.gameHistory.length > 0) {
                 const totalRounds = gameState.gameHistory.length;
@@ -3155,6 +3457,9 @@
             const currentHistory = historyManager.getCurrentHistory();
             updateHistoryTable(currentHistory);
             
+            // 初始化保存按钮状态
+            updateHistorySaveBtnStatus(currentHistory);
+            
             // 显示弹窗
             elements.historyOverlay.style.display = 'flex';
             document.getElementById('history-close-hint').style.display = 'block';
@@ -3165,6 +3470,7 @@
             const history = historyManager.getPrevHistory();
             updateHistoryTable(history);
             updateHistoryNav();
+            updateHistorySaveBtnStatus(history);
             playSound('buttonClick');
         }
         
@@ -3173,6 +3479,7 @@
             const history = historyManager.getNextHistory();
             updateHistoryTable(history);
             updateHistoryNav();
+            updateHistorySaveBtnStatus(history);
             playSound('buttonClick');
         }
         
@@ -3259,9 +3566,12 @@
         elements.confirmEndBtn.addEventListener('click', confirmAndEnd);
         elements.restartBtn.addEventListener('click', initGame);
         
-        // 历史记录导航按钮事件监听
+        // 为历史记录导航按钮添加事件监听器
         elements.historyLeftBtn.addEventListener('click', navigateToPrevHistory);
         elements.historyRightBtn.addEventListener('click', navigateToNextHistory);
+        
+        // 为历史记录保存按钮添加事件监听器
+        elements.historySaveBtn.addEventListener('click', saveHistoryAsImage);
         
         // 初始化游戏和计分表
         initGame();
