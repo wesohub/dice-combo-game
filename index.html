@@ -27,7 +27,7 @@
     <meta name="msapplication-tooltip" content="Dice Combo 骰子组合游戏">
     
     <!-- PWA 清单 -->
-    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Dice%20Combo%20%F0%9F%8E%B2%22%2C%22short_name%22%3A%22Dice%20Combo%22%2C%22description%22%3A%22Dice%20Combo%20%E9%AA%B0%E5%AD%90%E7%BB%84%E5%90%88%E6%B8%B8%E6%88%8F%22%2C%22start_url%22%3A%22.%22%2C%22scope%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a1a2e%22%2C%22theme_color%22%3A%22%231a1a2e%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%8E%B2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%8E%B2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Dice%20Combo%20%F0%9F%8E%B2%22%2C%22short_name%22%3A%22Dice%20Combo%22%2C%22description%22%3A%22Dice%20Combo%20%E9%AA%B0%E5%AD%90%E7%BB%84%E5%90%88%E6%B8%B8%E6%88%8F%22%2C%22start_url%22%3A%22.%2F%22%2C%22scope%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22display_override%22%3A%5B%22standalone%22%2C%22minimal-ui%22%2C%22browser%22%5D%2C%22background_color%22%3A%22%231a1a2e%22%2C%22theme_color%22%3A%22%231a1a2e%22%2C%22orientation%22%3A%22portrait-primary%22%2C%22prefer_related_applications%22%3Afalse%2C%22related_applications%22%3A%5B%5D%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%8E%B2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%2C%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%8E%B2%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -3604,10 +3604,26 @@
         
         // 处理PWA导航，防止打开新标签页
         function handlePwaNavigation() {
-            // 检测是否在PWA独立模式下运行
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                               window.navigator.standalone ||
-                               document.referrer.includes('android-app://');
+            // 增强的PWA检测方法
+            function isPwaMode() {
+                return (
+                    // Chrome/Android的PWA检测
+                    window.matchMedia('(display-mode: standalone)').matches ||
+                    // Safari/iOS的PWA检测
+                    window.navigator.standalone ||
+                    // Android App Links检测
+                    document.referrer.includes('android-app://') ||
+                    // Edge的PWA检测
+                    window.matchMedia('(display-mode: minimal-ui)').matches ||
+                    // 检查用户代理中的PWA标识
+                    navigator.userAgent.includes('; wv') === false && 
+                    navigator.userAgent.includes('Mobile Safari') && 
+                    !navigator.userAgent.includes('CriOS') && 
+                    !navigator.userAgent.includes('FxiOS')
+                );
+            }
+            
+            const isStandalone = isPwaMode();
             
             if (isStandalone) {
                 // 拦截所有链接点击事件
@@ -3626,6 +3642,22 @@
                             window.location.href = target.href;
                         }
                     }
+                    
+                    // 拦截可能触发新窗口的按钮点击
+                    const button = event.target.closest('button');
+                    if (button && button.getAttribute('onclick') && 
+                        (button.getAttribute('onclick').includes('window.open') || 
+                         button.getAttribute('onclick').includes('location.href'))) {
+                        event.preventDefault();
+                        // 提取URL并在当前窗口打开
+                        const onclick = button.getAttribute('onclick');
+                        const urlMatch = onclick.match(/window\.open\('([^']+)'\)|location\.href\s*=\s*['"]([^'"]+)['"]/);
+                        if (urlMatch && urlMatch[1]) {
+                            window.location.href = urlMatch[1];
+                        } else if (urlMatch && urlMatch[2]) {
+                            window.location.href = urlMatch[2];
+                        }
+                    }
                 });
                 
                 // 处理页面加载事件，确保不会在PWA模式下重新打开
@@ -3635,16 +3667,91 @@
                     }
                 });
                 
+                // 添加重复窗口检测和处理
+                window.addEventListener('load', function() {
+                    // 使用localStorage来跟踪打开的窗口
+                    const windowId = Date.now() + Math.random();
+                    const PWA_WINDOW_KEY = 'pwa_active_window';
+                    
+                    // 尝试获取当前激活的窗口ID
+                    const activeWindowId = localStorage.getItem(PWA_WINDOW_KEY);
+                    
+                    if (activeWindowId && activeWindowId !== String(windowId)) {
+                        // 如果已经有激活的窗口，关闭当前窗口（对于支持window.close()的环境）
+                        // 或者显示提示让用户关闭重复窗口
+                        if (window.self !== window.top && window.close) {
+                            window.close();
+                        } else {
+                            // 对于无法直接关闭的窗口，提示用户
+                            console.warn('检测到重复的PWA窗口，请关闭当前窗口以避免重复。');
+                        }
+                    } else {
+                        // 设置当前窗口为激活窗口
+                        localStorage.setItem(PWA_WINDOW_KEY, String(windowId));
+                        
+                        // 当窗口关闭时，清除激活窗口标记
+                        window.addEventListener('beforeunload', function() {
+                            const currentActiveWindowId = localStorage.getItem(PWA_WINDOW_KEY);
+                            if (currentActiveWindowId === String(windowId)) {
+                                localStorage.removeItem(PWA_WINDOW_KEY);
+                            }
+                        });
+                        
+                        // 定期更新激活窗口标记，确保不会因意外关闭而丢失
+                        setInterval(function() {
+                            const currentActiveWindowId = localStorage.getItem(PWA_WINDOW_KEY);
+                            if (currentActiveWindowId === String(windowId)) {
+                                localStorage.setItem(PWA_WINDOW_KEY, String(windowId));
+                            }
+                        }, 5000); // 每5秒更新一次
+                    }
+                });
+                
                 // 处理window.open调用
                 const originalOpen = window.open;
                 window.open = function(url, name, features) {
-                    // 如果在PWA模式下，使用当前窗口导航
-                    if (isStandalone && url && !name) {
+                    // 在PWA模式下，强制所有导航在当前窗口打开
+                    if (isStandalone && url) {
+                        // 检查URL是否属于当前域名
+                        try {
+                            const urlObj = new URL(url, window.location.origin);
+                            if (urlObj.origin === window.location.origin) {
+                                window.location.href = url;
+                                return window;
+                            }
+                        } catch (e) {
+                            // 处理相对URL或无效URL
+                            window.location.href = url;
+                            return window;
+                        }
+                    }
+                    // 对于外部链接，可以考虑在当前窗口打开或提示用户
+                    if (isStandalone) {
+                        // 外部链接也在当前窗口打开，或根据需要调整
                         window.location.href = url;
                         return window;
                     }
-                    // 否则使用原始方法
+                    // 非PWA模式下使用原始方法
                     return originalOpen.apply(this, arguments);
+                };
+                
+                // 拦截location.assign和location.replace调用
+                const originalAssign = window.location.assign;
+                window.location.assign = function(url) {
+                    if (isStandalone) {
+                        window.location.href = url;
+                    } else {
+                        originalAssign.call(window.location, url);
+                    }
+                };
+                
+                const originalReplace = window.location.replace;
+                window.location.replace = function(url) {
+                    if (isStandalone) {
+                        window.location.href = url;
+                    } else {
+                        originalReplace.call(window.location, url);
+                    }
                 };
             }
         }
