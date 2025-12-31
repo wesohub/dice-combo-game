@@ -5,20 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dice Combo</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>" type="image/svg+xml">
-    
-    <!-- PWA 支持 -->
-    <meta name="theme-color" content="#1a1a2e">
-    <meta name="description" content="Dice Combo 骰子组合游戏">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Dice Combo">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
-    <link rel="manifest" href="manifest.json">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="msapplication-TileColor" content="#1a1a2e">
-    <meta name="msapplication-starturl" content=".">
-    <meta name="msapplication-TileImage" content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
@@ -3591,19 +3577,6 @@
         
         // 初始化游戏和计分表
         initGame();
-        
-        // 注册Service Worker以支持PWA功能
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js')
-                    .then(function(registration) {
-                        console.log('Service Worker 注册成功，范围: ', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('Service Worker 注册失败: ', error);
-                    });
-            });
-        }
     </script>
 </body>
 </html>
