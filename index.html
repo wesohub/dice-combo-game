@@ -406,12 +406,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 5px;
             font-weight: bold;
             transition: all 0.2s ease;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1rem;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
         }
         
         .history-save-btn:hover {
@@ -438,7 +438,7 @@
             margin-top: 15px;
             overflow: auto;
             border-radius: 8px;
-            border: 1px solid #3a3a4e;
+            border: none;
             max-height: calc(90vh - 180px);
             display: flex;
             flex-direction: column;
@@ -468,10 +468,11 @@
             border-bottom: 2px solid rgba(255, 209, 102, 0.3);
             position: sticky;
             top: 0;
+            white-space: nowrap;
         }
         
         .history-table th:nth-child(1),
-        .history-table td:nth-child(1) { width: 8%; }
+        .history-table td:nth-child(1) { width: 10%; }
         .history-table th:nth-child(2),
         .history-table td:nth-child(2) { width: 10%; }
         .history-table th:nth-child(3),
@@ -945,6 +946,7 @@
     }
             .round-score-left { font-size: 0.85rem; padding: 2px 4px; }
             .history-table { font-size: 0.7rem; }
+            .history-table th { font-size: 0.75rem; }
             .history-table th, .history-table td { padding: 6px 3px; }
             .overlay-close-hint { font-size: 0.75rem; bottom: 15px; }
             .players-info { gap: 6px; }
@@ -3279,7 +3281,7 @@
             
             // 使用html2canvas捕获完整内容
             html2canvas(modalContent, {
-                scale: 2, // 提高图片清晰度
+                scale: 3, // 提高图片清晰度
                 useCORS: true,
                 logging: false,
                 backgroundColor: null, // 保持原有背景
