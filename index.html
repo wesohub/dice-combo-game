@@ -8,11 +8,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
+        /* CSS变量定义 */
+        :root {
+            /* 背景渐变 */
+            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --bg-secondary: rgba(40, 40, 60, 0.8);
+            --bg-tertiary: rgba(60, 60, 80, 0.8);
+            
+            /* 按钮渐变 */
+            --btn-purple-gradient: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            --btn-purple-hover: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%);
+            --btn-teal-gradient: linear-gradient(135deg, #4ecdc4 0%, #a8e6cf 100%);
+            --btn-teal-hover: linear-gradient(135deg, #3dbdb4 0%, #98d6bf 100%);
+            
+            /* 边框颜色 */
+            --border-primary: #3a3a4e;
+            --border-secondary: #2a2a3e;
+            --border-player: #4ecdc4;
+            --border-ai: #ff6b6b;
+            --border-warning: #ffd166;
+            
+            /* 文字颜色 */
+            --text-primary: #fff;
+            --text-secondary: #ffd166;
+            --text-warning: #ff6b6b;
+            --text-important: #4ecdc4;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); 
-            color: #fff; 
+            background: var(--bg-primary); 
+            color: var(--text-primary); 
             min-height: 100vh; 
             padding: 8px; 
             display: flex; 
@@ -34,35 +61,35 @@
             border-radius: 12px; 
             padding: 12px; 
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); 
-            border: 1px solid #2a2a3e; 
+            border: 1px solid var(--border-secondary); 
             margin-bottom: 8px; 
             position: relative;
             overflow-y: visible;
             max-height: none;
         }
         
-        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(40, 40, 60, 0.7); border-radius: 10px; border: 1px solid #3a3a4e; overflow: hidden; min-height: 80px; padding-right: 8px; }
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(40, 40, 60, 0.7); border-radius: 10px; border: 1px solid var(--border-primary); overflow: hidden; min-height: 80px; padding-right: 8px; }
         
         .title-section { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 16px; background: linear-gradient(90deg, rgba(60, 60, 80, 0.8) 0%, rgba(40, 40, 60, 0.7) 100%); }
         
         .header-buttons { display: flex; gap: 8px; align-items: center; }
         
-        .header-btn { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #222; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.2s ease; width: 44px; height: 44px; border-radius: 50%; font-size: 0.85rem; }
+        .header-btn { background: var(--btn-purple-gradient); color: #222; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.2s ease; width: 44px; height: 44px; border-radius: 50%; font-size: 0.85rem; }
         
-        .header-btn:hover { background: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%); transform: scale(1.05); }
+        .header-btn:hover { background: var(--btn-purple-hover); transform: scale(1.05); }
         
         .header-btn:active { transform: translateY(2px) scale(0.95); }
         
-        .game-title { font-size: 1.6rem; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+        .game-title { font-size: 1.6rem; font-weight: bold; color: var(--text-primary); display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
         
-        .game-subtitle { font-size: 0.9rem; color: #ffd166; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+        .game-subtitle { font-size: 0.9rem; color: var(--text-secondary); font-weight: bold; display: flex; align-items: center; gap: 6px; }
         
         .players-info { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
         
-        .player-card { flex: 1; background: rgba(40, 40, 60, 0.8); border-radius: 8px; padding: 8px; border: 1px solid #3a3a4e; display: flex; align-items: center; justify-content: space-between; position: relative; }
+        .player-card { flex: 1; background: var(--bg-secondary); border-radius: 8px; padding: 8px; border: 1px solid var(--border-primary); display: flex; align-items: center; justify-content: space-between; position: relative; }
         
-        .player-card.player { border-color: #4ecdc4; }
-        .player-card.ai { border-color: #ff6b6b; }
+        .player-card.player { border-color: var(--border-player); }
+        .player-card.ai { border-color: var(--border-ai); }
         
         .player-card.active-turn { box-shadow: 0 0 0 2px #ffd166, 0 0 15px rgba(255, 209, 102, 0.5); animation: pulse 2s infinite; }
         
@@ -267,11 +294,11 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
         }
         
-        #confirm-continue-btn { background: linear-gradient(135deg, #4ecdc4 0%, #a8e6cf 100%); color: #222; }
-        #confirm-continue-btn:hover { background: linear-gradient(135deg, #3dbdb4 0%, #98d6bf 100%); }
-        
-        #confirm-end-btn { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #222; }
-        #confirm-end-btn:hover { background: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%); }
+        #confirm-continue-btn { background: var(--btn-teal-gradient); color: #222; }
+        #confirm-continue-btn:hover { background: var(--btn-teal-hover); }
+
+        #confirm-end-btn { background: var(--btn-purple-gradient); color: #222; }
+        #confirm-end-btn:hover { background: var(--btn-purple-hover); }
         
         button:disabled { background: #555; color: #888; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
         
@@ -371,7 +398,7 @@
         }
         
         .history-nav-btn {
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            background: var(--btn-purple-gradient);
             color: #222;
             border: none;
             cursor: pointer;
@@ -387,7 +414,7 @@
         }
         
         .history-nav-btn:hover {
-            background: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%);
+            background: var(--btn-purple-hover);
             transform: scale(1.05);
         }
         
@@ -399,7 +426,7 @@
         }
         
         .history-save-btn {
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            background: var(--btn-purple-gradient);
             color: #222;
             border: none;
             cursor: pointer;
@@ -415,7 +442,7 @@
         }
         
         .history-save-btn:hover {
-            background: linear-gradient(135deg, #917cc1 0%, #ebb2db 100%);
+            background: var(--btn-purple-hover);
             transform: scale(1.05);
         }
         
@@ -677,16 +704,16 @@
         
         .game-over-buttons { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
         
-        #restart-btn { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: #222; font-size: 1rem; padding: 12px 24px; min-width: 200px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
-        
-        #game-over-history-btn { background: linear-gradient(135deg, #4ecdc4 0%, #a8e6cf 100%); color: #222; font-size: 1rem; padding: 12px 24px; min-width: 200px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
+        #restart-btn { background: var(--btn-purple-gradient); color: #222; font-size: 1rem; padding: 12px 24px; min-width: 200px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
+
+        #game-over-history-btn { background: var(--btn-teal-gradient); color: #222; font-size: 1rem; padding: 12px 24px; min-width: 200px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
         
         /* ===== 计分表区域样式 ===== */
         .score-table-container {
             background: rgba(30, 30, 50, 0.8);
             padding: 12px;
             border-radius: 10px;
-            border: 1px solid #3a3a5e;
+            border: 1px solid var(--border-primary);
             position: relative;
             min-height: 200px;
         }
@@ -2228,7 +2255,8 @@
         }
         
         // 计分并再次投掷 - 修复计分逻辑
-        function confirmAndContinue() {
+        // 处理组合计分的共用逻辑
+        function processCombination() {
             if (gameState.buttonCooldown) return;
             gameState.buttonCooldown = true;
             playSound('buttonClick');
@@ -2272,22 +2300,34 @@
             gameState.selectedDice.push(...allIndices);
             gameState.roundScore += totalScore;
             
-            if (gameState.currentPlayer === 'player') {
+            // 更新当前玩家的回合分数和组合字符串
+            const currentCombinationString = generateCombinationString(gameState.currentCombination);
+            const isPlayer = gameState.currentPlayer === 'player';
+            
+            // 更新回合分数
+            if (isPlayer) {
                 gameState.playerRoundScore = gameState.roundScore;
-                const currentCombinationString = generateCombinationString(gameState.currentCombination);
-                if (gameState.currentPlayerCombinationString && gameState.currentPlayerCombinationString !== '惩罚归零') {
-                    gameState.currentPlayerCombinationString += ' + ' + currentCombinationString;
-                } else gameState.currentPlayerCombinationString = currentCombinationString;
             } else {
                 gameState.aiRoundScore = gameState.roundScore;
-                const currentCombinationString = generateCombinationString(gameState.currentCombination);
-                if (gameState.currentAICombinationString && gameState.currentAICombinationString !== '惩罚归零') {
-                    gameState.currentAICombinationString += ' + ' + currentCombinationString;
-                } else gameState.currentAICombinationString = currentCombinationString;
+            }
+            
+            // 更新组合字符串
+            const combinationStringKey = isPlayer ? 'currentPlayerCombinationString' : 'currentAICombinationString';
+            if (gameState[combinationStringKey] && gameState[combinationStringKey] !== '惩罚归零') {
+                gameState[combinationStringKey] += ' + ' + currentCombinationString;
+            } else {
+                gameState[combinationStringKey] = currentCombinationString;
             }
             
             gameState.currentSequence = [];
             gameState.currentCombination = [];
+            
+            return true;
+        }
+        
+        // 计分并继续回合
+        function confirmAndContinue() {
+            if (!processCombination()) return;
             
             // 延迟禁用按钮，确保动画完成
             setTimeout(() => {
@@ -2359,67 +2399,9 @@
             }, 100); // 与动画时间相同，确保动画完成后再进行后续操作
         }
         
-        // 计分并结束回合 - 修复计分逻辑
+        // 计分并结束回合
         function confirmAndEnd() {
-            if (gameState.buttonCooldown) return;
-            gameState.buttonCooldown = true;
-            playSound('buttonClick');
-            if (gameState.currentCombination.length === 0) {
-                gameState.buttonCooldown = false;
-                return;
-            }
-            
-            // 修复计分逻辑：统计每种组合的数量，然后计算总分
-            const combinationCounts = {};
-            gameState.currentCombination.forEach(comb => {
-                const key = `${comb.type}-${comb.type === 'sequence' ? comb.values.length : comb.count}`;
-                if (!combinationCounts[key]) {
-                    combinationCounts[key] = {
-                        type: comb.type,
-                        count: comb.type === 'sequence' ? comb.values.length : comb.count,
-                        multiplier: 1,
-                        baseScore: comb.score // 存储基础分数
-                    };
-                } else {
-                    // 增加倍数（仅适用于2叠、3连和3叠）
-                    if ((comb.type === 'same' && comb.count === 2) || 
-                        (comb.type === 'sequence' && comb.values.length === 3) ||
-                        (comb.type === 'same' && comb.count === 3)) {
-                        combinationCounts[key].multiplier++;
-                    }
-                }
-            });
-            
-            // 计算总分：每个组合的基础分数 × 数量
-            let totalScore = 0;
-            Object.values(combinationCounts).forEach(combInfo => {
-                totalScore += combInfo.baseScore * combInfo.multiplier;
-            });
-            
-            const allIndices = gameState.currentCombination.flatMap(item => item.indices);
-            
-            const uniqueIndices = [...new Set(allIndices)];
-            if (uniqueIndices.length !== allIndices.length) return;
-            
-            gameState.selectedDice.push(...allIndices);
-            gameState.roundScore += totalScore;
-            
-            if (gameState.currentPlayer === 'player') {
-                gameState.playerRoundScore = gameState.roundScore;
-                const currentCombinationString = generateCombinationString(gameState.currentCombination);
-                if (gameState.currentPlayerCombinationString && gameState.currentPlayerCombinationString !== '惩罚归零') {
-                    gameState.currentPlayerCombinationString += ' + ' + currentCombinationString;
-                } else gameState.currentPlayerCombinationString = currentCombinationString;
-            } else {
-                gameState.aiRoundScore = gameState.roundScore;
-                const currentCombinationString = generateCombinationString(gameState.currentCombination);
-                if (gameState.currentAICombinationString && gameState.currentAICombinationString !== '惩罚归零') {
-                    gameState.currentAICombinationString += ' + ' + currentCombinationString;
-                } else gameState.currentAICombinationString = currentCombinationString;
-            }
-            
-            gameState.currentSequence = [];
-            gameState.currentCombination = [];
+            if (!processCombination()) return;
             
             // 延迟执行后续操作，确保动画完成
             setTimeout(() => {
