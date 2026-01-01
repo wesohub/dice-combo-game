@@ -2707,21 +2707,6 @@
             for (const set of allCombinationSets) {
                 const combinations = set.combinations;
                 
-                // 如果只有一个组合
-                if (combinations.length === 1) {
-                    const comb = combinations[0];
-                    
-                    // 检查是否是2叠、3连或3叠
-                    const isTwoSame = comb.type === 'same' && comb.count === 2;
-                    const isThreeSequence = comb.type === 'sequence' && comb.values.length === 3;
-                    const isThreeSame = comb.type === 'same' && comb.count === 3; // 新增：3叠
-                    
-                    // 如果是2叠、3连或3叠，直接选择这个组合
-                    if (isTwoSame || isThreeSequence || isThreeSame) {
-                        return set;
-                    }
-                }
-                
                 // 检查是否有5个骰子有效组合（5叠、5连）或以上组合
                 const hasLargeCombination = set.combinations.some(comb => 
                     (comb.type === 'same' && comb.count >= 5) || 
@@ -2771,9 +2756,9 @@
                 }
             }
             
-            // 如果以上都没有，尝试找到一个3叠、3连或2叠（按优先级：3叠 > 3连 > 2叠）
+            // 如果以上都没有，尝试找到一个3叠、2叠或3连（按优先级：3叠 > 2叠 > 3连）
             
-            // 首先尝试找3叠（新增：最高优先级）
+            // 首先尝试找3叠（最高优先级）
             const valueCounts = {};
             availableDice.forEach(dice => valueCounts[dice.value] = (valueCounts[dice.value] || 0) + 1);
             
@@ -2796,7 +2781,27 @@
                 }
             }
             
-            // 如果没有3叠，尝试找3连（优先级第二）
+            // 如果没有3叠，尝试找2叠（优先级第二）
+            for (const value in valueCounts) {
+                if (valueCounts[value] >= 2) {
+                    // 找到2叠的组合
+                    const indices = availableDice.filter(d => d.value == value).slice(0, 2).map(d => d.index);
+                    return {
+                        combinations: [{
+                            type: 'same',
+                            value: parseInt(value),
+                            count: 2,
+                            score: calculateScore('same', 2),
+                            indices: indices,
+                            diceUsed: 2
+                        }],
+                        totalScore: calculateScore('same', 2),
+                        totalDiceUsed: 2
+                    };
+                }
+            }
+            
+            // 如果没有2叠，最后尝试找3连（优先级最低）
             const uniqueValues = [...new Set(availableDice.map(d => d.value))].sort((a, b) => a - b);
             for (let i = 0; i <= uniqueValues.length - 3; i++) {
                 if (uniqueValues[i] + 1 === uniqueValues[i+1] && uniqueValues[i] + 2 === uniqueValues[i+2]) {
@@ -2820,26 +2825,6 @@
                             totalDiceUsed: 3
                         };
                     }
-                }
-            }
-            
-            // 如果没有3连，最后尝试找2叠（优先级最低）
-            for (const value in valueCounts) {
-                if (valueCounts[value] >= 2) {
-                    // 找到2叠的组合
-                    const indices = availableDice.filter(d => d.value == value).slice(0, 2).map(d => d.index);
-                    return {
-                        combinations: [{
-                            type: 'same',
-                            value: parseInt(value),
-                            count: 2,
-                            score: calculateScore('same', 2),
-                            indices: indices,
-                            diceUsed: 2
-                        }],
-                        totalScore: calculateScore('same', 2),
-                        totalDiceUsed: 2
-                    };
                 }
             }
             
